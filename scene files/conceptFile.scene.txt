@@ -1,0 +1,25 @@
+	//scene, collection of shapes	
+
+	//Shape, collection of sides
+	(0,0,0) (0,0,0) (0,0,0) (0,0,0) //side, collection of corners
+	(0,0,0) (0,0,0) (0,0,0) (0,0,0) //corner, collection of positions
+	(0,0,0) (0,0,0) (0,0,0) (0,0,0)
+	(0,0,0) (0,0,0) (0,0,0) (0,0,0)
+
+	//Shape, collection of sides
+	(0,0,0) (0,0,0) (0,0,0) (0,0,0) //side, collection of corners
+	(0,0,0) (0,0,0) (0,0,0) (0,0,0) //corner, collection of positions
+	(0,0,0) (0,0,0) (0,0,0) (0,0,0)
+	(0,0,0) (0,0,0) (0,0,0) (0,0,0)
+
+	//Shape, collection of sides
+	(0,0,0) (0,0,0) (0,0,0) (0,0,0) //side, collection of corners
+	(0,0,0) (0,0,0) (0,0,0) (0,0,0) //corner, collection of positions
+	(0,0,0) (0,0,0) (0,0,0) (0,0,0)
+	(0,0,0) (0,0,0) (0,0,0) (0,0,0)
+
+	//Shape, collection of sides
+	(0,0,0) (0,0,0) (0,0,0) (0,0,0) //side, collection of corners
+	(0,0,0) (0,0,0) (0,0,0) (0,0,0) //corner, collection of positions
+	(0,0,0) (0,0,0) (0,0,0) (0,0,0)
+	(0,0,0) (0,0,0) (0,0,0) (0,0,0)

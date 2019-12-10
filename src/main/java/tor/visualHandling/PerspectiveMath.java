@@ -153,7 +153,13 @@ public class PerspectiveMath
         //                               x                  y               z           d (plane equation) = d
         double[] planeEquation = {normalToPlane[0], normalToPlane[1], normalToPlane[2], added};
 
+        double amountOfT = planeEquation[0] * ray[0] + planeEquation[0] * ray[0] + planeEquation[0] * ray[0];
+        double addedLooseNumbers = planeEquation[3] + ray[3]  + ray[4] + ray[5];
 
+        double valueAtIntersection = amountOfT / addedLooseNumbers;
+
+        double[] pointOfInterSection = {ray[0] * valueAtIntersection, ray[1] * valueAtIntersection, ray[2] * valueAtIntersection};
+        return calculateSpaceDistance(pointOfInterSection, new double[] {ray[3], ray[4], ray[5]});
     }
 
     public static double[] calculateCrossProduct(double[] vector1, double[] vector2){

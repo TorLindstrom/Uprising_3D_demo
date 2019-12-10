@@ -13,21 +13,23 @@ public class Renderer extends JPanel
 {
     Manager manager;
 
-    public Renderer(Manager manager){
+    public Renderer(Manager manager)
+    {
         this.manager = manager;
     }
 
     @Override
-    public void paintComponent(Graphics graphics){
+    public void paintComponent(Graphics graphics)
+    {
         super.paintComponent(graphics);
         Graphics2D graphics2D = (Graphics2D) graphics;
         ArrayList<Frame> frames = new ArrayList<>();
-        for (Shape shape: manager.getScene().getShapes()){
-            for (Side side: shape.getSides()){
+        for (Shape shape : manager.getScene().getShapes()) {
+            for (Side side : shape.getSides()) {
                 int numberOfCorners = side.getCorners().length;
                 int[] x = new int[numberOfCorners], y = new int[numberOfCorners];
                 int i = 0;
-                for (Point point: side.getCorners()){
+                for (Point point : side.getCorners()) {
                     int[] screenPosition = PerspectiveMath.makeRelative(point, manager.getCamera());
                     x[i] = screenPosition[0];
                     y[i] = screenPosition[1];
@@ -39,15 +41,11 @@ public class Renderer extends JPanel
             for (int j = 0; j < Window.height; j++) {
                 ArrayList<Frame> containedBy = new ArrayList<>();
                 java.awt.Point asPoint = new java.awt.Point(i, j);
-                for (Frame frame: frames){
-                    if (frame.polygon.contains(asPoint)){
+                for (Frame frame : frames) {
+                    if (frame.polygon.contains(asPoint)) {
                         containedBy.add(frame);
                     }
                 }
-
-
-
-
 
 
                 double addedHorizontalAngle;
@@ -70,9 +68,26 @@ public class Renderer extends JPanel
                 double ySlopeRay = (Math.sin(horizontalRayAngle * (Math.PI / 180)));
                 double zSlopeRay = Math.cos(verticalRayAngle * (Math.PI / 180));
 
-                double distance;
-                for (Frame frame: containedBy){
-                    double[] P1Vector = {
+                double distance = 100000;
+                Side currentClosestSide = null;
+                for (Frame frame : containedBy) {
+
+
+                    double newDistance = PerspectiveMath.calculateDistanceToIntersection(frame.side, new double[]{
+                            xSlopeRay,
+                            ySlopeRay,
+                            zSlopeRay,
+                            manager.getCamera().getX(),
+                            manager.getCamera().getY(),
+                            manager.getCamera().getZ()
+                    });
+
+                    if (newDistance < distance){
+                        distance = newDistance;
+                        currentClosestSide = frame.side;
+                    }
+
+                    /*double[] P1Vector = {
                             frame.side.getCorners()[1].getX() - frame.side.getCorners()[0].getX(),
                             frame.side.getCorners()[1].getY() - frame.side.getCorners()[0].getY(),
                             frame.side.getCorners()[1].getZ() - frame.side.getCorners()[0].getZ(),
@@ -82,8 +97,9 @@ public class Renderer extends JPanel
                             frame.side.getCorners()[2].getY() - frame.side.getCorners()[0].getY(),
                             frame.side.getCorners()[2].getZ() - frame.side.getCorners()[0].getZ(),
                     };
-                    //double[] intersectPoint = ((P1Vector[0] * P2Vector[0]) / () );
+                    double[] intersectPoint = ((P1Vector[0] * P2Vector[0]) / ());*/
                 }
+                //TODO: paint the color of the closest (selected) side
             }
         }
     }

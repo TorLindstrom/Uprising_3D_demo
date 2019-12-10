@@ -2,7 +2,9 @@ package tor.visualHandling;
 
 
 import tor.Camera;
+import tor.Manager;
 import tor.shapeHandling.Point;
+import tor.shapeHandling.Side;
 
 import static java.lang.Math.*;
 import static tor.visualHandling.Window.*;
@@ -120,5 +122,47 @@ public class PerspectiveMath
     {
         return sqrt(pow(pos1[0] - pos2[0], 2) + pow(pos1[1] - pos2[1], 2) + pow(pos1[2] - pos2[2], 2));
     }
+
+
+    //---------------------------------------------------Vector and plane math------------------------------------------------------//
+
+    public static double calculateDistanceToIntersection(Side side, double[] ray){
+        //calc plane
+        //
+        //calc/determine ray as line
+        //
+        //calc intersect point
+        //
+        //determine distance
+
+        double[] P1Vector = {
+                side.getCorners()[1].getX() - side.getCorners()[0].getX(),
+                side.getCorners()[1].getY() - side.getCorners()[0].getY(),
+                side.getCorners()[1].getZ() - side.getCorners()[0].getZ(),
+        };
+        double[] P2Vector = {
+                side.getCorners()[2].getX() - side.getCorners()[0].getX(),
+                side.getCorners()[2].getY() - side.getCorners()[0].getY(),
+                side.getCorners()[2].getZ() - side.getCorners()[0].getZ(),
+        };
+
+        //Point (corner 0), and two vectors, P1, P2, describes a plane
+        double[] normalToPlane = calculateCrossProduct(P1Vector, P2Vector);
+        double added = side.getCorners()[0].getX() * normalToPlane[0] + side.getCorners()[0].getY() * normalToPlane[1] + side.getCorners()[0].getZ() * normalToPlane[2];
+
+        //                               x                  y               z           d (plane equation) = d
+        double[] planeEquation = {normalToPlane[0], normalToPlane[1], normalToPlane[2], added};
+
+
+    }
+
+    public static double[] calculateCrossProduct(double[] vector1, double[] vector2){
+        return new double[] {
+                (vector1[1] * vector2[2] - vector1[2] * vector2[1]),
+                (vector1[0] * vector2[2] - vector1[2] * vector2[0]),
+                (vector1[0] * vector2[1] - vector1[1] * vector2[0])
+        };
+    }
+
 
 }

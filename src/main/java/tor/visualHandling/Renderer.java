@@ -44,6 +44,46 @@ public class Renderer extends JPanel
                         containedBy.add(frame);
                     }
                 }
+
+
+
+
+
+
+                double addedHorizontalAngle;
+                if (i < Window.width / 2) {
+                    addedHorizontalAngle = -((Window.width / 2. - i) / Window.width) * manager.getCamera().getHorizontalFOV();
+                } else {
+                    addedHorizontalAngle = ((Window.width - i) / (double) Window.width) * manager.getCamera().getHorizontalFOV();
+                }
+                double addedVerticalAngle;
+                if (i < Window.width / 2) {
+                    addedVerticalAngle = -((Window.height / 2. - i) / Window.height) * manager.getCamera().getVerticalFOV();
+                } else {
+                    addedVerticalAngle = ((Window.height - i) / (double) Window.height) * manager.getCamera().getVerticalFOV();
+                }
+
+                double horizontalRayAngle = (manager.getCamera().getHorizontalAngle() + addedHorizontalAngle);
+                double verticalRayAngle = (manager.getCamera().getVerticalAngle() + addedVerticalAngle);
+
+                double xSlopeRay = (Math.cos(horizontalRayAngle * (Math.PI / 180)));
+                double ySlopeRay = (Math.sin(horizontalRayAngle * (Math.PI / 180)));
+                double zSlopeRay = Math.cos(verticalRayAngle * (Math.PI / 180));
+
+                double distance;
+                for (Frame frame: containedBy){
+                    double[] P1Vector = {
+                            frame.side.getCorners()[1].getX() - frame.side.getCorners()[0].getX(),
+                            frame.side.getCorners()[1].getY() - frame.side.getCorners()[0].getY(),
+                            frame.side.getCorners()[1].getZ() - frame.side.getCorners()[0].getZ(),
+                    };
+                    double[] P2Vector = {
+                            frame.side.getCorners()[2].getX() - frame.side.getCorners()[0].getX(),
+                            frame.side.getCorners()[2].getY() - frame.side.getCorners()[0].getY(),
+                            frame.side.getCorners()[2].getZ() - frame.side.getCorners()[0].getZ(),
+                    };
+                    //double[] intersectPoint = ((P1Vector[0] * P2Vector[0]) / () );
+                }
             }
         }
     }

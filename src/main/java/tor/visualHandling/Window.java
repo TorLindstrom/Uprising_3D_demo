@@ -3,6 +3,7 @@ package tor.visualHandling;
 import tor.Manager;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class Window extends JFrame
 {
@@ -13,6 +14,7 @@ public class Window extends JFrame
         add(renderer);
         pack();
         setVisible(true);
+        setResizable(false);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
 }

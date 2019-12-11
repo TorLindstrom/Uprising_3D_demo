@@ -126,14 +126,8 @@ public class PerspectiveMath
 
     //---------------------------------------------------Vector and plane math------------------------------------------------------//
 
-    public static double calculateDistanceToIntersection(Side side, double[] ray){
-        //calc plane
-        //
-        //calc/determine ray as line
-        //
-        //calc intersect point
-        //
-        //determine distance
+    public static double calculateDistanceToIntersection(Side side, double[] ray)
+    {
 
         double[] P1Vector = {
                 side.getCorners()[1].getX() - side.getCorners()[0].getX(),
@@ -148,27 +142,141 @@ public class PerspectiveMath
 
         //Point (corner 0), and two vectors, P1, P2, describes a plane
         double[] normalToPlane = calculateCrossProduct(P1Vector, P2Vector);
-        double added = side.getCorners()[0].getX() * normalToPlane[0] + side.getCorners()[0].getY() * normalToPlane[1] + side.getCorners()[0].getZ() * normalToPlane[2];
+        double added = -(side.getCorners()[0].getX() * normalToPlane[0] + side.getCorners()[0].getY() * normalToPlane[1] + side.getCorners()[0].getZ() * normalToPlane[2]);
 
         //                               x                  y               z           d (plane equation) = d
         double[] planeEquation = {normalToPlane[0], normalToPlane[1], normalToPlane[2], added};
 
-        double amountOfT = planeEquation[0] * ray[0] + planeEquation[0] * ray[0] + planeEquation[0] * ray[0];
-        double addedLooseNumbers = planeEquation[3] + ray[3]  + ray[4] + ray[5];
+        double amountOfT = planeEquation[0] * ray[0] + planeEquation[1] * ray[1] + planeEquation[2] * ray[2];
+        double addedLooseNumbers = planeEquation[3] + ray[3] + ray[4] + ray[5];
 
         double valueAtIntersection = amountOfT / addedLooseNumbers;
 
         double[] pointOfInterSection = {ray[0] * valueAtIntersection, ray[1] * valueAtIntersection, ray[2] * valueAtIntersection};
-        return calculateSpaceDistance(pointOfInterSection, new double[] {ray[3], ray[4], ray[5]});
+        return calculateSpaceDistance(pointOfInterSection, new double[]{ray[3], ray[4], ray[5]});
     }
 
-    public static double[] calculateCrossProduct(double[] vector1, double[] vector2){
-        return new double[] {
-                (vector1[1] * vector2[2] - vector1[2] * vector2[1]),
-                (vector1[0] * vector2[2] - vector1[2] * vector2[0]),
-                (vector1[0] * vector2[1] - vector1[1] * vector2[0])
+    /*public static double calculateDistanceToIntersection(Side side, double[] firstPos, double[] secondPos)
+    {
+        double[] P1Vector = {
+                side.getCorners()[1].getX() - side.getCorners()[0].getX(),
+                side.getCorners()[1].getY() - side.getCorners()[0].getY(),
+                side.getCorners()[1].getZ() - side.getCorners()[0].getZ(),
+        };
+        double[] P2Vector = {
+                side.getCorners()[2].getX() - side.getCorners()[0].getX(),
+                side.getCorners()[2].getY() - side.getCorners()[0].getY(),
+                side.getCorners()[2].getZ() - side.getCorners()[0].getZ(),
+        };
+
+        double[] ray = new double[] {
+                secondPos[0] - firstPos[0],
+                secondPos[1] - firstPos[1],
+                secondPos[2] - firstPos[2]
+        };
+
+        //Point (corner 0), and two vectors, P1, P2, describes a plane
+        double[] normalToPlane = calculateCrossProduct(P1Vector, P2Vector);
+        double added = -(side.getCorners()[0].getX() * normalToPlane[0] + side.getCorners()[0].getY() * normalToPlane[1] + side.getCorners()[0].getZ() * normalToPlane[2]);
+
+        //                               x                  y               z           d (plane equation) = d
+        double[] planeEquation = {normalToPlane[0], normalToPlane[1], normalToPlane[2], added};
+
+
+        //TODO: proper math?
+        double amountOfT = planeEquation[0] * ray[0] + planeEquation[1] * ray[1] + planeEquation[2] * ray[2];
+        double addedLooseNumbers = planeEquation[3] + firstPos[0] + firstPos[1] + firstPos[2];
+
+        double valueAtIntersection = amountOfT / addedLooseNumbers;
+
+        double[] pointOfInterSection = {ray[0] * valueAtIntersection, ray[1] * valueAtIntersection, ray[2] * valueAtIntersection};
+        return calculateSpaceDistance(pointOfInterSection, new double[]{firstPos[0], firstPos[1], firstPos[2]});
+    }*/
+
+    public static double calculateDistanceToIntersection(Side side, double[] firstPos, double[] secondPos)
+    {
+        double[] P1Vector = {
+                side.getCorners()[1].getX() - side.getCorners()[0].getX(),
+                side.getCorners()[1].getY() - side.getCorners()[0].getY(),
+                side.getCorners()[1].getZ() - side.getCorners()[0].getZ(),
+        };
+        double[] P2Vector = {
+                side.getCorners()[2].getX() - side.getCorners()[0].getX(),
+                side.getCorners()[2].getY() - side.getCorners()[0].getY(),
+                side.getCorners()[2].getZ() - side.getCorners()[0].getZ(),
+        };
+
+        double[] ray = new double[] {
+                secondPos[0] - firstPos[0],
+                secondPos[1] - firstPos[1],
+                secondPos[2] - firstPos[2]
+        };
+
+        //Point (corner 0), and two vectors, P1, P2, describes a plane
+        double[] normalToPlane = calculateCrossProduct(P1Vector, P2Vector);
+        double added = -(side.getCorners()[0].getX() * normalToPlane[0] + side.getCorners()[0].getY() * normalToPlane[1] + side.getCorners()[0].getZ() * normalToPlane[2]);
+
+        //                               x                  y               z           d (plane equation) = d
+        double[] planeEquation = {normalToPlane[0], normalToPlane[1], normalToPlane[2], added};
+
+
+        //TODO: proper math?
+        //double amountOfT = planeEquation[0] * ray[0] + planeEquation[1] * ray[1] + planeEquation[2] * ray[2];
+        double addedLooseNumbers = planeEquation[3] + firstPos[0] + firstPos[1] + firstPos[2];
+
+        //double valueAtIntersection = amountOfT / addedLooseNumbers;
+        /*double valueAtIntersection =
+                -(planeEquation[0] * firstPos[0] + planeEquation[1] * firstPos[1] + planeEquation[2] * firstPos[2] + planeEquation[3])
+                /
+                (planeEquation[0] * ray[0] + planeEquation[1] * ray[1] + planeEquation[2] * ray[2]);*/
+
+        //double[] pointOfInterSection = {ray[0] * valueAtIntersection, ray[1] * valueAtIntersection, ray[2] * valueAtIntersection};
+        double[] pointOfInterSection = {
+                firstPos[0] - ((ray[0] * (planeEquation[0] * firstPos[0] + planeEquation[1] * firstPos[1] + planeEquation[2] * firstPos[2] + planeEquation[3])) / (planeEquation[0] * ray[0] + planeEquation[1] * ray[1] + planeEquation[2] * ray[2])),
+                firstPos[1] - ((ray[1] * (planeEquation[0] * firstPos[0] + planeEquation[1] * firstPos[1] + planeEquation[2] * firstPos[2] + planeEquation[3])) / (planeEquation[0] * ray[0] + planeEquation[1] * ray[1] + planeEquation[2] * ray[2])),
+                firstPos[2] - ((ray[2] * (planeEquation[0] * firstPos[0] + planeEquation[1] * firstPos[1] + planeEquation[2] * firstPos[2] + planeEquation[3])) / (planeEquation[0] * ray[0] + planeEquation[1] * ray[1] + planeEquation[2] * ray[2])),
+        };
+
+        return calculateSpaceDistance(pointOfInterSection, new double[]{firstPos[0], firstPos[1], firstPos[2]});
+    }
+
+    public static double[] calculateCrossProduct(double[] vector1, double[] vector2)
+    {
+        return new double[]{
+                ((vector1[1] * vector2[2]) - (vector1[2] * vector2[1])),
+                ((vector1[2] * vector2[0]) - (vector1[0] * vector2[2])),
+                ((vector1[0] * vector2[1]) - (vector1[1] * vector2[0]))
         };
     }
 
+    public static double[] createSecondRayPosition(int x, int y, Manager manager)
+    {
+
+        double horizontalAngle = ((double) x / width) * manager.getCamera().getHorizontalFOV() + (manager.getCamera().getHorizontalAngle() - manager.getCamera().getHorizontalFOV() / 2);
+        double verticalPlaneAngle = (manager.getCamera().getVerticalAngle() + manager.getCamera().getVerticalFOV() / 2) - ((double) y / height) * manager.getCamera().getVerticalFOV();
+
+        /*
+        //TODO: do i really need the relativedepth? distance instead?
+        double relativeXYDepth = Math.cos(horizontalAngle) * 100000;
+        double zDepthDistance = calculatePaneDistance(relativeZ, relativeXYDepth);
+        double relativeDepth = cos(verticalPlaneAngle) * zDepthDistance;
+
+        double halfWidthAtDepth = tan(manager.getCamera().getHorizontalFOV() / 2 * (PI / 180)) * relativeDepth;
+        double halfWidthFromLeft = halfWidthAtDepth + sin(horizontalAngle) * relativeDepth; //width deep from left
+        double percentageFromTheLeft = halfWidthFromLeft / (halfWidthAtDepth * 2);
+
+        double halfHeightAtDepth = tan(camera.getVerticalFOV() / 2 * (PI / 180)) * relativeDepth;
+        double halfHeightFromUp = halfHeightAtDepth - tan(verticalPlaneAngle) * relativeDepth;
+        double percentageFromUp = halfHeightFromUp / (halfHeightAtDepth * 2);
+
+        screenPos[0] = (int) ((width * percentageFromTheLeft) + 0.5);
+        screenPos[1] = (int) ((height * percentageFromUp) + 0.5);
+        */
+        return new double[]{
+                cos(horizontalAngle * (PI / 180)) * 100000,
+                sin(horizontalAngle * (PI / 180)) * 100000,
+                sin(verticalPlaneAngle * (PI / 180)) * 100000
+        };
+    }
 
 }

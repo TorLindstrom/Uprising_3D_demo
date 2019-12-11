@@ -75,14 +75,6 @@ public class Renderer extends JPanel
                 double distance = 100000;
                 Side currentClosestSide = null;
                 for (Frame frame : containedBy) {
-                    /*double newDistance = PerspectiveMath.calculateDistanceToIntersection(frame.side, new double[]{
-                            xSlopeRay,
-                            ySlopeRay,
-                            zSlopeRay,
-                            manager.getCamera().getX(),
-                            manager.getCamera().getY(),
-                            manager.getCamera().getZ()
-                    });*/
                     double newDistance = PerspectiveMath.calculateDistanceToIntersection(frame.side, manager.getCamera().getPosition(), secondRayPosition);
 
                     if (newDistance < distance){

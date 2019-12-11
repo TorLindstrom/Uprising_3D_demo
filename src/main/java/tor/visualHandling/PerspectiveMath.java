@@ -214,27 +214,17 @@ public class PerspectiveMath
 
         //Point (corner 0), and two vectors, P1, P2, describes a plane
         double[] normalToPlane = calculateCrossProduct(P1Vector, P2Vector);
-        double added = -(side.getCorners()[0].getX() * normalToPlane[0] + side.getCorners()[0].getY() * normalToPlane[1] + side.getCorners()[0].getZ() * normalToPlane[2]);
+        double added = -((side.getCorners()[0].getX() * normalToPlane[0]) + (side.getCorners()[0].getY() * normalToPlane[1]) + (side.getCorners()[0].getZ() * normalToPlane[2]));
 
-        //                               x                  y               z           d (plane equation) = d
+        //                               x                  y               z             d (plane equation) = d
         double[] planeEquation = {normalToPlane[0], normalToPlane[1], normalToPlane[2], added};
 
+        double toBeDividedBy = (planeEquation[0] * ray[0] + planeEquation[1] * ray[1] + planeEquation[2] * ray[2]);
 
-        //TODO: proper math?
-        //double amountOfT = planeEquation[0] * ray[0] + planeEquation[1] * ray[1] + planeEquation[2] * ray[2];
-        double addedLooseNumbers = planeEquation[3] + firstPos[0] + firstPos[1] + firstPos[2];
-
-        //double valueAtIntersection = amountOfT / addedLooseNumbers;
-        /*double valueAtIntersection =
-                -(planeEquation[0] * firstPos[0] + planeEquation[1] * firstPos[1] + planeEquation[2] * firstPos[2] + planeEquation[3])
-                /
-                (planeEquation[0] * ray[0] + planeEquation[1] * ray[1] + planeEquation[2] * ray[2]);*/
-
-        //double[] pointOfInterSection = {ray[0] * valueAtIntersection, ray[1] * valueAtIntersection, ray[2] * valueAtIntersection};
         double[] pointOfInterSection = {
-                firstPos[0] - ((ray[0] * (planeEquation[0] * firstPos[0] + planeEquation[1] * firstPos[1] + planeEquation[2] * firstPos[2] + planeEquation[3])) / (planeEquation[0] * ray[0] + planeEquation[1] * ray[1] + planeEquation[2] * ray[2])),
-                firstPos[1] - ((ray[1] * (planeEquation[0] * firstPos[0] + planeEquation[1] * firstPos[1] + planeEquation[2] * firstPos[2] + planeEquation[3])) / (planeEquation[0] * ray[0] + planeEquation[1] * ray[1] + planeEquation[2] * ray[2])),
-                firstPos[2] - ((ray[2] * (planeEquation[0] * firstPos[0] + planeEquation[1] * firstPos[1] + planeEquation[2] * firstPos[2] + planeEquation[3])) / (planeEquation[0] * ray[0] + planeEquation[1] * ray[1] + planeEquation[2] * ray[2])),
+                firstPos[0] - ((ray[0] * (planeEquation[0] * firstPos[0] + planeEquation[1] * firstPos[1] + planeEquation[2] * firstPos[2] + planeEquation[3])) / toBeDividedBy),
+                firstPos[1] - ((ray[1] * (planeEquation[0] * firstPos[0] + planeEquation[1] * firstPos[1] + planeEquation[2] * firstPos[2] + planeEquation[3])) / toBeDividedBy),
+                firstPos[2] - ((ray[2] * (planeEquation[0] * firstPos[0] + planeEquation[1] * firstPos[1] + planeEquation[2] * firstPos[2] + planeEquation[3])) / toBeDividedBy),
         };
 
         return calculateSpaceDistance(pointOfInterSection, new double[]{firstPos[0], firstPos[1], firstPos[2]});

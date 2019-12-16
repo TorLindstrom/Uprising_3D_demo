@@ -49,8 +49,6 @@ public class Renderer extends JPanel
                     }
                 }
 
-                double[] secondRayPosition = PerspectiveMath.createSecondRayPosition(i, j, manager);
-
 
                 /*double addedHorizontalAngle;
                 if (i < Window.width / 2) {
@@ -72,14 +70,18 @@ public class Renderer extends JPanel
                 double ySlopeRay = (Math.sin(horizontalRayAngle * (Math.PI / 180)));
                 double zSlopeRay = Math.cos(verticalRayAngle * (Math.PI / 180));*/
 
-                double distance = 100000;
+                double distance = Double.MAX_VALUE;
                 Side currentClosestSide = null;
-                for (Frame frame : containedBy) {
-                    double newDistance = PerspectiveMath.calculateDistanceToIntersection(frame.side, manager.getCamera().getPosition(), secondRayPosition);
+                double[] secondRayPosition;
+                if (!containedBy.isEmpty()) {
+                    secondRayPosition = PerspectiveMath.createSecondRayPosition(i, j, manager);
+                    for (Frame frame : containedBy) {
+                        double newDistance = PerspectiveMath.calculateDistanceToIntersection(frame.side, manager.getCamera().getPosition(), secondRayPosition);
 
-                    if (newDistance < distance){
-                        distance = newDistance;
-                        currentClosestSide = frame.side;
+                        if (newDistance < distance) {
+                            distance = newDistance;
+                            currentClosestSide = frame.side;
+                        }
                     }
                 }
                 if (currentClosestSide == null){

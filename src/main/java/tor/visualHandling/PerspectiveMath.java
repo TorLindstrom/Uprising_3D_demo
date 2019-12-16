@@ -242,11 +242,10 @@ public class PerspectiveMath
     public static double[] createSecondRayPosition(int x, int y, Manager manager)
     {
 
-        double horizontalAngle = ((double) x / width) * manager.getCamera().getHorizontalFOV() + (manager.getCamera().getHorizontalAngle() - manager.getCamera().getHorizontalFOV() / 2);
-        double verticalPlaneAngle = (manager.getCamera().getVerticalAngle() + manager.getCamera().getVerticalFOV() / 2) - ((double) y / height) * manager.getCamera().getVerticalFOV();
+        /*double horizontalAngle = ((double) x / width) * manager.getCamera().getHorizontalFOV() + (manager.getCamera().getHorizontalAngle() - manager.getCamera().getHorizontalFOV() / 2);
+        double verticalPlaneAngle = (manager.getCamera().getVerticalAngle() + manager.getCamera().getVerticalFOV() / 2) - ((double) y / height) * manager.getCamera().getVerticalFOV();*/
 
-        /*
-        //TODO: do i really need the relativedepth? distance instead?
+        /*//TODO: do i really need the relativedepth? distance instead?
         double relativeXYDepth = Math.cos(horizontalAngle) * 100000;
         double zDepthDistance = calculatePaneDistance(relativeZ, relativeXYDepth);
         double relativeDepth = cos(verticalPlaneAngle) * zDepthDistance;
@@ -260,12 +259,30 @@ public class PerspectiveMath
         double percentageFromUp = halfHeightFromUp / (halfHeightAtDepth * 2);
 
         screenPos[0] = (int) ((width * percentageFromTheLeft) + 0.5);
-        screenPos[1] = (int) ((height * percentageFromUp) + 0.5);
-        */
-        return new double[]{
+        screenPos[1] = (int) ((height * percentageFromUp) + 0.5);*/
+
+        /*return new double[]{
                 cos(horizontalAngle * (PI / 180)) * 100000,
                 sin(horizontalAngle * (PI / 180)) * 100000,
                 sin(verticalPlaneAngle * (PI / 180)) * 100000
+        };*/
+
+        //for making a triangle, with the side 1 (half width of screen)
+        double fromMiddleHorizontal = (x - width / 2.);
+        double fromMiddleVertical = (x - height / 2.);
+
+        //length of middle spar, determined from FOV
+        double lengthOfMiddleHorizontal = (width / 2.) / tan((manager.getCamera().getHorizontalFOV() / 2) * (PI / 180));
+        double lengthOfMiddleVertical = (height / 2.) / tan((manager.getCamera().getVerticalFOV() / 2) * (PI / 180));
+
+        //angles of ray
+        double horizontalAngle = -atan(fromMiddleHorizontal / lengthOfMiddleHorizontal) + manager.getCamera().getHorizontalAngle();
+        double verticalAngle = -atan(fromMiddleVertical / lengthOfMiddleVertical) + manager.getCamera().getVerticalAngle();
+
+        return new double[]{
+                cos(horizontalAngle * (PI / 180) * 10),
+                sin(horizontalAngle * (PI / 180)) * 10,
+                sin(verticalAngle * (PI / 180)) * 10
         };
     }
 

@@ -206,13 +206,14 @@ public class PerspectiveMath
                 side.getCorners()[2].getZ() - side.getCorners()[0].getZ(),
         };
 
-        double[] ray = new double[] {
+        double[] ray = new double[]{
                 secondPos[0] - firstPos[0],
                 secondPos[1] - firstPos[1],
                 secondPos[2] - firstPos[2]
         };
 
         //Point (corner 0), and two vectors, P1, P2, describes a plane
+
         double[] normalToPlane = calculateCrossProduct(P1Vector, P2Vector);
         double added = -((side.getCorners()[0].getX() * normalToPlane[0]) + (side.getCorners()[0].getY() * normalToPlane[1]) + (side.getCorners()[0].getZ() * normalToPlane[2]));
 
@@ -268,21 +269,21 @@ public class PerspectiveMath
         };*/
 
         //for making a triangle, with the side 1 (half width of screen)
-        double fromMiddleHorizontal = (x - width / 2.);
-        double fromMiddleVertical = (x - height / 2.);
+        double fromMiddleHorizontal = (x - (width / 2.));
+        double fromMiddleVertical = (y - (height / 2.));
 
         //length of middle spar, determined from FOV
         double lengthOfMiddleHorizontal = (width / 2.) / tan((manager.getCamera().getHorizontalFOV() / 2) * (PI / 180));
         double lengthOfMiddleVertical = (height / 2.) / tan((manager.getCamera().getVerticalFOV() / 2) * (PI / 180));
 
         //angles of ray
-        double horizontalAngle = -atan(fromMiddleHorizontal / lengthOfMiddleHorizontal) + manager.getCamera().getHorizontalAngle();
-        double verticalAngle = -atan(fromMiddleVertical / lengthOfMiddleVertical) + manager.getCamera().getVerticalAngle();
+        double horizontalAngle = atan(-fromMiddleHorizontal / lengthOfMiddleHorizontal) + (manager.getCamera().getHorizontalAngle() * (PI / 180));
+        double verticalAngle = atan(-fromMiddleVertical / lengthOfMiddleVertical) + (manager.getCamera().getVerticalAngle() * (PI / 180));
 
         return new double[]{
-                cos(horizontalAngle * (PI / 180) * 10),
-                sin(horizontalAngle * (PI / 180)) * 10,
-                sin(verticalAngle * (PI / 180)) * 10
+                cos(horizontalAngle) * 10 + manager.getCamera().getX(),
+                sin(horizontalAngle) * 10 + manager.getCamera().getY(),
+                sin(verticalAngle) * 10 + manager.getCamera().getZ()
         };
     }
 

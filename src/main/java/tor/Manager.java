@@ -12,7 +12,7 @@ import java.util.Scanner;
 public class Manager
 {
     private Scene scene = new Scene();
-    private Camera camera = new Camera(new Point(-300, -50, 200));
+    final static private Camera camera = new Camera(new Point(-300, 200, 200));
     private Window window = new Window(this);
 
     public Manager() throws InterruptedException
@@ -31,12 +31,18 @@ public class Manager
     {
         Scanner scanner = new Scanner(System.in);
         scanner.nextLine();
-        for (int i = 0; i < 130; i++) {
-            camera.setY(camera.getY() + 2);
+        for (int i = 0; i < 70; i++) {
+            camera.setY(camera.getY() - 5);
+            camera.setX(camera.getX()  - 0.2);
+            camera.setHorizontalAngle(camera.getHorizontalAngle() + 0.3);
             window.repaint();
-            Thread.sleep(100);
+            Thread.sleep(200);
         }
-
+        System.out.print("done");
+        for (int i = 0; i < 700; i++) {
+            window.repaint();
+            Thread.sleep(2000);
+        }
     }
 
     public Scene getScene()

@@ -31,17 +31,27 @@ public class Manager
     {
         Scanner scanner = new Scanner(System.in);
         scanner.nextLine();
-        for (int i = 0; i < 70; i++) {
-            camera.setY(camera.getY() - 5);
+        long refreshRate = 40;
+        for (int i = 0; i < 40; i++) {
+            camera.setY(camera.getY() - 4.2);
             camera.setX(camera.getX()  - 0.2);
-            camera.setHorizontalAngle(camera.getHorizontalAngle() + 0.3);
+            camera.setHorizontalAngle(camera.getHorizontalAngle() + 0.8);
             window.repaint();
-            Thread.sleep(200);
+            Thread.sleep(refreshRate);
         }
-        System.out.print("done");
-        for (int i = 0; i < 700; i++) {
+        for (int i = 0; i < 80; i++) {
+            camera.setY(camera.getY() - 4);
+            camera.setX(camera.getX()  + 1);
+            camera.setHorizontalAngle(camera.getHorizontalAngle() + 0.6);
             window.repaint();
-            Thread.sleep(2000);
+            Thread.sleep(refreshRate);
+        }
+        for (int i = 0; i < 80; i++) {
+            camera.setY(camera.getY() - 2.2);
+            camera.setX(camera.getX()  + 4);
+            camera.setHorizontalAngle(camera.getHorizontalAngle() + 0.5);
+            window.repaint();
+            Thread.sleep(refreshRate);
         }
     }
 

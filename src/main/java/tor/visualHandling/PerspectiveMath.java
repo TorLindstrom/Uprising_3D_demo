@@ -156,43 +156,6 @@ public class PerspectiveMath
         return calculateSpaceDistance(pointOfInterSection, new double[]{ray[3], ray[4], ray[5]});
     }
 
-    /*public static double calculateDistanceToIntersection(Side side, double[] firstPos, double[] secondPos)
-    {
-        double[] P1Vector = {
-                side.getCorners()[1].getX() - side.getCorners()[0].getX(),
-                side.getCorners()[1].getY() - side.getCorners()[0].getY(),
-                side.getCorners()[1].getZ() - side.getCorners()[0].getZ(),
-        };
-        double[] P2Vector = {
-                side.getCorners()[2].getX() - side.getCorners()[0].getX(),
-                side.getCorners()[2].getY() - side.getCorners()[0].getY(),
-                side.getCorners()[2].getZ() - side.getCorners()[0].getZ(),
-        };
-
-        double[] ray = new double[] {
-                secondPos[0] - firstPos[0],
-                secondPos[1] - firstPos[1],
-                secondPos[2] - firstPos[2]
-        };
-
-        //Point (corner 0), and two vectors, P1, P2, describes a plane
-        double[] normalToPlane = calculateCrossProduct(P1Vector, P2Vector);
-        double added = -(side.getCorners()[0].getX() * normalToPlane[0] + side.getCorners()[0].getY() * normalToPlane[1] + side.getCorners()[0].getZ() * normalToPlane[2]);
-
-        //                               x                  y               z           d (plane equation) = d
-        double[] planeEquation = {normalToPlane[0], normalToPlane[1], normalToPlane[2], added};
-
-
-        //TODO: proper math?
-        double amountOfT = planeEquation[0] * ray[0] + planeEquation[1] * ray[1] + planeEquation[2] * ray[2];
-        double addedLooseNumbers = planeEquation[3] + firstPos[0] + firstPos[1] + firstPos[2];
-
-        double valueAtIntersection = amountOfT / addedLooseNumbers;
-
-        double[] pointOfInterSection = {ray[0] * valueAtIntersection, ray[1] * valueAtIntersection, ray[2] * valueAtIntersection};
-        return calculateSpaceDistance(pointOfInterSection, new double[]{firstPos[0], firstPos[1], firstPos[2]});
-    }*/
-
     public static double calculateDistanceToIntersection(Side side, double[] firstPos, double[] secondPos)
     {
         double[] P1Vector = {
@@ -277,7 +240,7 @@ public class PerspectiveMath
         double lengthOfMiddleVertical = (height / 2.) / tan((manager.getCamera().getVerticalFOV() / 2) * (PI / 180));
 
         //angles of ray
-        double horizontalAngle = atan(-fromMiddleHorizontal / lengthOfMiddleHorizontal) + (manager.getCamera().getHorizontalAngle() * (PI / 180));
+        double horizontalAngle = atan(fromMiddleHorizontal / lengthOfMiddleHorizontal) + (manager.getCamera().getHorizontalAngle() * (PI / 180));
         double verticalAngle = atan(-fromMiddleVertical / lengthOfMiddleVertical) + (manager.getCamera().getVerticalAngle() * (PI / 180));
 
         return new double[]{

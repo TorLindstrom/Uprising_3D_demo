@@ -37,6 +37,7 @@ public class Point
     public void setX(double x)
     {
         this.x = x;
+        position[0] = x;
     }
 
     public double getY()
@@ -47,6 +48,7 @@ public class Point
     public void setY(double y)
     {
         this.y = y;
+        position[1] = y;
     }
 
     public double getZ()
@@ -57,5 +59,6 @@ public class Point
     public void setZ(double z)
     {
         this.z = z;
+        position[2] = z;
     }
 }

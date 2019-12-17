@@ -205,32 +205,6 @@ public class PerspectiveMath
 
     public static double[] createSecondRayPosition(int x, int y, Manager manager)
     {
-
-        /*double horizontalAngle = ((double) x / width) * manager.getCamera().getHorizontalFOV() + (manager.getCamera().getHorizontalAngle() - manager.getCamera().getHorizontalFOV() / 2);
-        double verticalPlaneAngle = (manager.getCamera().getVerticalAngle() + manager.getCamera().getVerticalFOV() / 2) - ((double) y / height) * manager.getCamera().getVerticalFOV();*/
-
-        /*//TODO: do i really need the relativedepth? distance instead?
-        double relativeXYDepth = Math.cos(horizontalAngle) * 100000;
-        double zDepthDistance = calculatePaneDistance(relativeZ, relativeXYDepth);
-        double relativeDepth = cos(verticalPlaneAngle) * zDepthDistance;
-
-        double halfWidthAtDepth = tan(manager.getCamera().getHorizontalFOV() / 2 * (PI / 180)) * relativeDepth;
-        double halfWidthFromLeft = halfWidthAtDepth + sin(horizontalAngle) * relativeDepth; //width deep from left
-        double percentageFromTheLeft = halfWidthFromLeft / (halfWidthAtDepth * 2);
-
-        double halfHeightAtDepth = tan(camera.getVerticalFOV() / 2 * (PI / 180)) * relativeDepth;
-        double halfHeightFromUp = halfHeightAtDepth - tan(verticalPlaneAngle) * relativeDepth;
-        double percentageFromUp = halfHeightFromUp / (halfHeightAtDepth * 2);
-
-        screenPos[0] = (int) ((width * percentageFromTheLeft) + 0.5);
-        screenPos[1] = (int) ((height * percentageFromUp) + 0.5);*/
-
-        /*return new double[]{
-                cos(horizontalAngle * (PI / 180)) * 100000,
-                sin(horizontalAngle * (PI / 180)) * 100000,
-                sin(verticalPlaneAngle * (PI / 180)) * 100000
-        };*/
-
         //for making a triangle, with the side 1 (half width of screen)
         double fromMiddleHorizontal = (x - (width / 2.));
         double fromMiddleVertical = (y - (height / 2.));

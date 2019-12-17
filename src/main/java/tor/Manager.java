@@ -31,7 +31,7 @@ public class Manager
     {
         Scanner scanner = new Scanner(System.in);
         scanner.nextLine();
-        long refreshRate = 40;
+        long refreshRate = 30;
         for (int i = 0; i < 40; i++) {
             camera.setY(camera.getY() - 4.2);
             camera.setX(camera.getX()  - 0.2);
@@ -39,10 +39,10 @@ public class Manager
             window.repaint();
             Thread.sleep(refreshRate);
         }
-        for (int i = 0; i < 80; i++) {
-            camera.setY(camera.getY() - 4);
-            camera.setX(camera.getX()  + 1);
-            camera.setHorizontalAngle(camera.getHorizontalAngle() + 0.6);
+        for (int i = 0; i < 120; i++) {
+            camera.setZ(camera.getZ() + 0.5);
+            camera.setX(camera.getX()  + 0.3);
+            camera.setVerticalAngle(camera.getVerticalAngle() - 0.2);
             window.repaint();
             Thread.sleep(refreshRate);
         }

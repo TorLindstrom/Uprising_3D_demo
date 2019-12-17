@@ -1,6 +1,5 @@
 package tor.visualHandling;
 
-import org.jcp.xml.dsig.internal.dom.DOMUtils;
 import tor.Manager;
 import tor.shapeHandling.Shape;
 import tor.shapeHandling.Side;
@@ -48,27 +47,6 @@ public class Renderer extends JPanel
                         containedBy.add(frame);
                     }
                 }
-
-
-                /*double addedHorizontalAngle;
-                if (i < Window.width / 2) {
-                    addedHorizontalAngle = -((Window.width / 2. - i) / Window.width) * manager.getCamera().getHorizontalFOV();
-                } else {
-                    addedHorizontalAngle = ((Window.width - i) / (double) Window.width) * manager.getCamera().getHorizontalFOV();
-                }
-                double addedVerticalAngle;
-                if (j < Window.height / 2) {
-                    addedVerticalAngle = -((Window.height / 2. - j) / Window.height) * manager.getCamera().getVerticalFOV();
-                } else {
-                    addedVerticalAngle = ((Window.height - j) / (double) Window.height) * manager.getCamera().getVerticalFOV();
-                }
-
-                double horizontalRayAngle = (manager.getCamera().getHorizontalAngle() + addedHorizontalAngle);
-                double verticalRayAngle = (manager.getCamera().getVerticalAngle() + addedVerticalAngle);
-
-                double xSlopeRay = (Math.cos(horizontalRayAngle * (Math.PI / 180)));
-                double ySlopeRay = (Math.sin(horizontalRayAngle * (Math.PI / 180)));
-                double zSlopeRay = Math.cos(verticalRayAngle * (Math.PI / 180));*/
 
                 double distance = Double.MAX_VALUE;
                 Side currentClosestSide = null;

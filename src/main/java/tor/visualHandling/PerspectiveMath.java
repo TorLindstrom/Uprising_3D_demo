@@ -72,11 +72,25 @@ public class PerspectiveMath
         double relativeZ = pos.getZ() - camera.getZ();
         int[] screenPos = new int[2];
         double xyDistance = calculatePaneDistance(relativeX, relativeY);
+
+        //TODO: the angle does not reflect correctly if the values are negative, flipping them back 180 degrees at times
         double horizontalPlaneAngle = Math.atan(relativeY / relativeX) - camera.getHorizontalAngle() * (PI / 180);
+
+        /*if (horizontalPlaneAngle < 0){
+            if (isNegative(relativeY)){
+                horizontalPlaneAngle += PI;
+            }
+        } else {
+            if (isNegative(relativeX)){
+                horizontalPlaneAngle += PI;
+            }
+        }*/
+
         double relativeXYDepth = Math.cos(horizontalPlaneAngle) * xyDistance;
         double verticalPlaneAngle = Math.atan(relativeZ / relativeXYDepth) - camera.getVerticalAngle() * (PI / 180);
         double zDepthDistance = calculatePaneDistance(relativeZ, relativeXYDepth);
 
+        //TODO: is this not dependent on the point being in front of the camera?
         double relativeDepth = cos(verticalPlaneAngle) * zDepthDistance;
 
         double halfWidthAtDepth = tan(camera.getHorizontalFOV() / 2 * (PI / 180)) * relativeDepth;
@@ -94,7 +108,7 @@ public class PerspectiveMath
 
     public static int setHorizonLevel(Camera camera)
     {
-        double angleToHorizon = -((Math.atan(camera.getPosition()[2] / 100000.0)) * (180 / PI)) - camera.getVerticalAngle();
+        double angleToHorizon = -((Math.atan(camera.getPosition()[2] / Double.MAX_VALUE)) * (180 / PI)) - camera.getVerticalAngle();
         return (int) (height - (camera.getVerticalFOV() / 2 + angleToHorizon) / camera.getVerticalFOV() * height);
     }
 
@@ -121,6 +135,10 @@ public class PerspectiveMath
     public static double calculateSpaceDistance(double[] pos1, double[] pos2)
     {
         return sqrt(pow(pos1[0] - pos2[0], 2) + pow(pos1[1] - pos2[1], 2) + pow(pos1[2] - pos2[2], 2));
+    }
+
+    public static boolean isNegative(double value){
+        return value / abs(value) < 0;
     }
 
 

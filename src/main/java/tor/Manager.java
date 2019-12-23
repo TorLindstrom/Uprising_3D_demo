@@ -7,6 +7,9 @@ import tor.shapeHandling.Side;
 import tor.visualHandling.Window;
 
 import java.awt.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class Manager
@@ -42,14 +45,14 @@ public class Manager
         for (int i = 0; i < 70; i++) {
             camera.setY(camera.getY() + 3);
             camera.setX(camera.getX() - 0.2);
-            camera.setHorizontalAngle(camera.getHorizontalAngle() + 0.2);
+            //camera.setHorizontalAngle(camera.getHorizontalAngle() + 0.2);
             window.repaint();
             Thread.sleep(refreshRate);
         }
         for (int i = 0; i < 70; i++) {
             camera.setY(camera.getY() - 3);
             camera.setX(camera.getX() + 0.2);
-            camera.setHorizontalAngle(camera.getHorizontalAngle() - 0.2);
+            //camera.setHorizontalAngle(camera.getHorizontalAngle() - 0.2);
             window.repaint();
             Thread.sleep(refreshRate);
         }

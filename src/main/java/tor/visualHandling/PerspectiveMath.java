@@ -73,18 +73,12 @@ public class PerspectiveMath
         int[] screenPos = new int[2];
         double xyDistance = calculatePaneDistance(relativeX, relativeY);
 
-        //TODO: the angle does not reflect correctly if the values are negative, flipping them back 180 degrees at times
-        double horizontalPlaneAngle = Math.atan(relativeY / relativeX) - camera.getHorizontalAngle() * (PI / 180);
+        double standardHorizontalAngle = acos(relativeX / xyDistance);
+        if (isNegative(relativeY)){
+            standardHorizontalAngle *= -1;
+        }
 
-        /*if (horizontalPlaneAngle < 0){
-            if (isNegative(relativeY)){
-                horizontalPlaneAngle += PI;
-            }
-        } else {
-            if (isNegative(relativeX)){
-                horizontalPlaneAngle += PI;
-            }
-        }*/
+        double horizontalPlaneAngle = standardHorizontalAngle + camera.getHorizontalAngle() * PI / 180;
 
         double relativeXYDepth = Math.cos(horizontalPlaneAngle) * xyDistance;
         double verticalPlaneAngle = Math.atan(relativeZ / relativeXYDepth) - camera.getVerticalAngle() * (PI / 180);
@@ -94,7 +88,7 @@ public class PerspectiveMath
         double relativeDepth = cos(verticalPlaneAngle) * zDepthDistance;
 
         double halfWidthAtDepth = tan(camera.getHorizontalFOV() / 2 * (PI / 180)) * relativeDepth;
-        double halfWidthFromLeft = halfWidthAtDepth + sin(horizontalPlaneAngle) * xyDistance; //width deep from left
+        double halfWidthFromLeft = halfWidthAtDepth + sin(horizontalPlaneAngle) * calculateSpaceDistance(relativeX, relativeY, relativeZ) /*xyDistance*/; //width deep from left
         double percentageFromTheLeft = halfWidthFromLeft / (halfWidthAtDepth * 2);
 
         double halfHeightAtDepth = tan(camera.getVerticalFOV() / 2 * (PI / 180)) * relativeDepth;

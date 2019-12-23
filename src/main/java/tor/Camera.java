@@ -20,6 +20,7 @@ public class Camera extends Point
     public void setHorizontalAngle(double horizontalAngle)
     {
         this.horizontalAngle = horizontalAngle;
+        this.horizontalAngle %= 360;
     }
 
     public double getVerticalAngle()
@@ -30,6 +31,7 @@ public class Camera extends Point
     public void setVerticalAngle(double verticalAngle)
     {
         this.verticalAngle = verticalAngle;
+        this.verticalAngle %= 360;
     }
 
     public double getRollAngle()
@@ -40,6 +42,7 @@ public class Camera extends Point
     public void setRollAngle(double rollAngle)
     {
         this.rollAngle = rollAngle;
+        this.horizontalAngle %= 360;
     }
 
     public double getHorizontalFOV()

@@ -38,9 +38,9 @@ public class Renderer extends JPanel
 
     public void paintHorizon(Graphics graphics)
     {
-        graphics.setColor(new Color(204, 255, 153));
+        graphics.setColor(new Color(255, 255, 83));
         graphics.fillRect(0, 0, manager.getWindow().getWidth(), manager.getWindow().getHeight());
-        graphics.setColor(new Color(153, 204, 0));
+        graphics.setColor(new Color(255, 153, 0));
         graphics.fillRect(0, PerspectiveMath.setHorizonLevel(manager.getCamera()), manager.getWindow().getWidth(), manager.getWindow().getHeight());
     }
 
@@ -96,7 +96,8 @@ public class Renderer extends JPanel
                 int[] x = new int[numberOfCorners], y = new int[numberOfCorners];
                 int i = 0;
                 for (Point point : side.getCorners()) {
-                    int[] screenPosition = PerspectiveMath.makeRelative(point, manager.getCamera());
+                    //int[] screenPosition = PerspectiveMath.makeRelative(point, manager.getCamera());
+                    int[] screenPosition = PerspectiveMath.makeRelative(point.getX(), point.getY(), point.getZ(), manager.getCamera());
                     x[i] = screenPosition[0];
                     y[i++] = screenPosition[1];
                 }

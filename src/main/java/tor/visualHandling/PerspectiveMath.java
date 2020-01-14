@@ -11,7 +11,24 @@ import static tor.visualHandling.Window.*;
 
 public class PerspectiveMath
 {
+
     public static int[] makeRelative(double x, double y, double z, Camera camera)
+    {
+        double relativeX = x - camera.getX();
+        double relativeY = y - camera.getY();
+        double relativeZ = z - camera.getZ();
+        int[] screenPos = new int[2];
+        double horizontalPlaneAngle = (Math.atan(relativeY / relativeX) * (180 / PI)) - camera.getHorizontalAngle();
+        if (isNegative(relativeX)){
+            horizontalPlaneAngle += 180;
+        }
+        double verticalPlaneAngle = (Math.atan(relativeZ / calculatePaneDistance(relativeX, relativeY)) * (180 / PI)) - camera.getVerticalAngle();
+        screenPos[0] = (int) (-tan((horizontalPlaneAngle * PI /180) / 4) * width) + width / 2;
+        screenPos[1] = (int) (-tan((verticalPlaneAngle * PI /180) / 4) * height) + height / 2;
+        return screenPos;
+    }
+
+    /*public static int[] makeRelative(double x, double y, double z, Camera camera)
     {
         double relativeX = x - camera.getX();
         double relativeY = y - camera.getY();
@@ -36,7 +53,7 @@ public class PerspectiveMath
         screenPos[0] = (int) ((width * percentageFromTheLeft) + 0.5);
         screenPos[1] = (int) ((height * percentageFromUp) + 0.5);
         return screenPos;
-    }
+    }*/
 
     public static int[] makeRelative(double[] pos, Camera camera)
     {

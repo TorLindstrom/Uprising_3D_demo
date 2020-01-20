@@ -18,14 +18,12 @@ public class PerspectiveMath
         double relativeY = y - camera.getY();
         double relativeZ = z - camera.getZ();
         int[] screenPos = new int[2];
-        double horizontalPlaneAngle = (Math.atan(relativeY / relativeX) * (180 / PI)) - camera.getHorizontalAngle();
-        if (isNegative(relativeX)){
-            horizontalPlaneAngle += 180;
-        }
+        double horizontalPlaneAngle = (Math.atan2(relativeY, relativeX) * (180 / PI)) - camera.getHorizontalAngle();
         double verticalPlaneAngle = (Math.atan(relativeZ / calculatePaneDistance(relativeX, relativeY)) * (180 / PI)) - camera.getVerticalAngle();
-        screenPos[0] = (int) (-tan((horizontalPlaneAngle * PI /180) / 4) * width) + width / 2;
-        screenPos[1] = (int) (-tan((verticalPlaneAngle * PI /180) / 4) * height) + height / 2;
+        screenPos[0] = (int) (-tan((horizontalPlaneAngle * PI /180) / 4) * width / ((camera.getHorizontalFOV()/2) / 180)) + width / 2;
+        screenPos[1] = (int) (-tan((verticalPlaneAngle * PI /180) / 4) * height / ((camera.getVerticalFOV()/2) / 180)) + height / 2;
         return screenPos;
+        //TODO: vertical angle near edges need to be determined by a viewing frustum for accuracy
     }
 
     /*public static int[] makeRelative(double x, double y, double z, Camera camera)

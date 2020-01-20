@@ -7,9 +7,6 @@ import tor.shapeHandling.Side;
 import tor.visualHandling.Window;
 
 import java.awt.*;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class Manager
@@ -32,6 +29,8 @@ public class Manager
                 new Side(Color.GRAY, new Point(300, 400, 0), new Point(500, 400, 0), new Point(400, 300, 300))));
         scene.addShape(new Shape(
                 new Side(Color.GRAY, new Point(2000, -500, 0), new Point(-1000, -500, 0), new Point(-1000, -500, 500), new Point(2000, -500, 500))));
+        scene.addShape(new Shape(
+                new Side(Color.BLUE, new Point(2000, -500, 1000), new Point(-500, -500, 1000), new Point(-500, 500, 1000), new Point(2000, 500, 1000))));
 
         window.repaint();
         movement();
@@ -42,6 +41,36 @@ public class Manager
         Scanner scanner = new Scanner(System.in);
         scanner.nextLine();
         long refreshRate = 30;
+        /*for (int i = 0; i < 110; i++) {
+            camera.setHorizontalFOV(camera.getHorizontalFOV() - 0.3);
+            window.repaint();
+            Thread.sleep(refreshRate);
+        }
+        for (int i = 0; i <110; i++) {
+            camera.setHorizontalFOV(camera.getHorizontalFOV() + 0.3);
+            window.repaint();
+            Thread.sleep(refreshRate);
+        }
+        for (int i = 0; i < 90; i++) {
+            camera.setVerticalFOV(camera.getVerticalFOV() - 0.3);
+            window.repaint();
+            Thread.sleep(refreshRate);
+        }
+        for (int i = 0; i < 90; i++) {
+            camera.setVerticalFOV(camera.getVerticalFOV() + 0.3);
+            window.repaint();
+            Thread.sleep(refreshRate);
+        }*/
+        for (int i = 0; i < 500; i++) {
+            camera.setX(camera.getX() - 3);
+            window.repaint();
+            Thread.sleep(refreshRate);
+        }
+        for (int i = 0; i < 500; i++) {
+            camera.setX(camera.getX() + 3);
+            window.repaint();
+            Thread.sleep(refreshRate);
+        }
         for (int i = 0; i < 70; i++) {
             camera.setY(camera.getY() + 3);
             camera.setX(camera.getX() - 0.2);
@@ -64,20 +93,20 @@ public class Manager
             Thread.sleep(refreshRate);
         }
         for (int i = 0; i < 60; i++) {
-            camera.setZ(camera.getZ() + 0.2);
+            camera.setZ(camera.getZ() + 0.7);
             camera.setX(camera.getX() + 1);
             camera.setVerticalAngle(camera.getVerticalAngle() - 0.4);
             window.repaint();
             Thread.sleep(refreshRate);
         }
         for (int i = 0; i < 60; i++) {
-            camera.setZ(camera.getZ() - 0.2);
+            camera.setZ(camera.getZ() - 0.7);
             camera.setX(camera.getX() - 1);
             camera.setVerticalAngle(camera.getVerticalAngle() + 0.4);
             window.repaint();
             Thread.sleep(refreshRate);
         }
-        for (int i = 0; i < 600; i++) {
+        for (int i = 0; i < 200; i++) {
             camera.setY(camera.getY() - 2.2);
             camera.setX(camera.getX() + 4);
             camera.setHorizontalAngle(camera.getHorizontalAngle() + 0.5);

@@ -5,7 +5,7 @@ import tor.shapeHandling.Point;
 public class Camera extends Point
 {
     private double horizontalAngle = 0, verticalAngle = 0, rollAngle = 0;
-    private double horizontalFOV = 100, verticalFOV = 75;
+    private double horizontalFOV = 90, verticalFOV = 65;
 
     public Camera(Point point)
     {

@@ -4,7 +4,10 @@ package tor.visualHandling;
 import tor.Camera;
 import tor.Manager;
 import tor.shapeHandling.Point;
+import tor.shapeHandling.Shape;
 import tor.shapeHandling.Side;
+
+import java.util.ArrayList;
 
 import static java.lang.Math.*;
 import static tor.visualHandling.Window.*;
@@ -14,16 +17,20 @@ public class PerspectiveMath
 
     public static int[] makeRelative(double x, double y, double z, Camera camera)
     {
+
+        //Damn it all, need depth of field anyways
+        //TODO: implement depth of field from old makeRelative method, needed for it to make sense to hoomans
+
         double relativeX = x - camera.getX();
         double relativeY = y - camera.getY();
         double relativeZ = z - camera.getZ();
         int[] screenPos = new int[2];
         double horizontalPlaneAngle = (Math.atan2(relativeY, relativeX) * (180 / PI)) - camera.getHorizontalAngle();
         double verticalPlaneAngle = (Math.atan(relativeZ / calculatePaneDistance(relativeX, relativeY)) * (180 / PI)) - camera.getVerticalAngle();
-        screenPos[0] = (int) (-tan((horizontalPlaneAngle * PI /180) / 4) * width / ((camera.getHorizontalFOV()/2) / 180)) + width / 2;
-        screenPos[1] = (int) (-tan((verticalPlaneAngle * PI /180) / 4) * height / ((camera.getVerticalFOV()/2) / 180)) + height / 2;
+        screenPos[0] = (int) (-tan((horizontalPlaneAngle * PI / 180) / 4) * width / ((camera.getHorizontalFOV() / 2) / 180)) + width / 2;
+        screenPos[1] = (int) (-tan((verticalPlaneAngle * PI / 180) / 4) * height / ((camera.getVerticalFOV() / 2) / 180)) + height / 2;
         return screenPos;
-        //TODO: vertical angle near edges need to be determined by a viewing frustum for accuracy
+        //TODO: vertical angle near edges need to be determined by a viewing frustum for accuracy, not done here
     }
 
     /*public static int[] makeRelative(double x, double y, double z, Camera camera)
@@ -89,7 +96,7 @@ public class PerspectiveMath
         double xyDistance = calculatePaneDistance(relativeX, relativeY);
 
         double standardHorizontalAngle = acos(relativeX / xyDistance);
-        if (isNegative(relativeY)){
+        if (isNegative(relativeY)) {
             standardHorizontalAngle *= -1;
         }
 
@@ -118,7 +125,8 @@ public class PerspectiveMath
     public static int setHorizonLevel(Camera camera)
     {
         double angleToHorizon = -((Math.atan(camera.getPosition()[2] / Double.MAX_VALUE)) * (180 / PI)) - camera.getVerticalAngle();
-        return (int) (height - (camera.getVerticalFOV() / 2 + angleToHorizon) / camera.getVerticalFOV() * height);
+        return (int) (tan((camera.getVerticalAngle() * PI / 180) / 4) * height / ((camera.getVerticalFOV() / 2) / 180)) + height / 2;
+        //return (int) (height - (camera.getVerticalFOV() / 2 + angleToHorizon) / camera.getVerticalFOV() * height);
     }
 
     public static double calculatePaneDistance(double x, double y)
@@ -146,44 +154,40 @@ public class PerspectiveMath
         return sqrt(pow(pos1[0] - pos2[0], 2) + pow(pos1[1] - pos2[1], 2) + pow(pos1[2] - pos2[2], 2));
     }
 
-    public static boolean isNegative(double value){
+    public static boolean isNegative(double value)
+    {
         return value / abs(value) < 0;
+    }
+
+    public static boolean isOnScreen(int[] screenPos)
+    {
+        return isWithinRange(screenPos[0], 0, width) && isWithinRange(screenPos[1], 0, height);
+    }
+
+    public static boolean isWithinRange(double value, double lower, double upper)
+    {
+        return value < upper && value > lower;
+    }
+
+    public static boolean isWithinSpaceRange(Point point, Point borderingTop, Point borderingBot)
+    {
+        return point.getX() < max(borderingBot.getX(), borderingTop.getX()) &&
+                point.getX() > min(borderingBot.getX(), borderingTop.getX()) &&
+                point.getY() < max(borderingBot.getY(), borderingTop.getY()) &&
+                point.getY() > min(borderingBot.getY(), borderingTop.getY()) &&
+                point.getZ() < max(borderingBot.getZ(), borderingTop.getZ()) &&
+                point.getZ() > min(borderingBot.getZ(), borderingTop.getZ());
+    }
+
+    public static Integer[] findFrustumIntersection(Side[] frustumSides, double[] currentPos, double[] checkingPos)
+    {
+        return null;
     }
 
 
     //---------------------------------------------------Vector and plane math------------------------------------------------------//
 
-    public static double calculateDistanceToIntersection(Side side, double[] ray)
-    {
-
-        double[] P1Vector = {
-                side.getCorners()[1].getX() - side.getCorners()[0].getX(),
-                side.getCorners()[1].getY() - side.getCorners()[0].getY(),
-                side.getCorners()[1].getZ() - side.getCorners()[0].getZ(),
-        };
-        double[] P2Vector = {
-                side.getCorners()[2].getX() - side.getCorners()[0].getX(),
-                side.getCorners()[2].getY() - side.getCorners()[0].getY(),
-                side.getCorners()[2].getZ() - side.getCorners()[0].getZ(),
-        };
-
-        //Point (corner 0), and two vectors, P1, P2, describes a plane
-        double[] normalToPlane = calculateCrossProduct(P1Vector, P2Vector);
-        double added = -(side.getCorners()[0].getX() * normalToPlane[0] + side.getCorners()[0].getY() * normalToPlane[1] + side.getCorners()[0].getZ() * normalToPlane[2]);
-
-        //                               x                  y               z           d (plane equation) = d
-        double[] planeEquation = {normalToPlane[0], normalToPlane[1], normalToPlane[2], added};
-
-        double amountOfT = planeEquation[0] * ray[0] + planeEquation[1] * ray[1] + planeEquation[2] * ray[2];
-        double addedLooseNumbers = planeEquation[3] + ray[3] + ray[4] + ray[5];
-
-        double valueAtIntersection = amountOfT / addedLooseNumbers;
-
-        double[] pointOfInterSection = {ray[0] * valueAtIntersection, ray[1] * valueAtIntersection, ray[2] * valueAtIntersection};
-        return calculateSpaceDistance(pointOfInterSection, new double[]{ray[3], ray[4], ray[5]});
-    }
-
-    public static double calculateDistanceToIntersection(Side side, double[] firstPos, double[] secondPos)
+    public static double[] calculateIntersectionPoint(Side side, double[] firstPos, double[] secondPos)
     {
         double[] P1Vector = {
                 side.getCorners()[1].getX() - side.getCorners()[0].getX(),
@@ -195,7 +199,6 @@ public class PerspectiveMath
                 side.getCorners()[2].getY() - side.getCorners()[0].getY(),
                 side.getCorners()[2].getZ() - side.getCorners()[0].getZ(),
         };
-
         double[] ray = new double[]{
                 secondPos[0] - firstPos[0],
                 secondPos[1] - firstPos[1],
@@ -212,13 +215,11 @@ public class PerspectiveMath
 
         double toBeDividedBy = (planeEquation[0] * ray[0] + planeEquation[1] * ray[1] + planeEquation[2] * ray[2]);
 
-        double[] pointOfInterSection = {
+        return new double[]{
                 firstPos[0] - ((ray[0] * (planeEquation[0] * firstPos[0] + planeEquation[1] * firstPos[1] + planeEquation[2] * firstPos[2] + planeEquation[3])) / toBeDividedBy),
                 firstPos[1] - ((ray[1] * (planeEquation[0] * firstPos[0] + planeEquation[1] * firstPos[1] + planeEquation[2] * firstPos[2] + planeEquation[3])) / toBeDividedBy),
                 firstPos[2] - ((ray[2] * (planeEquation[0] * firstPos[0] + planeEquation[1] * firstPos[1] + planeEquation[2] * firstPos[2] + planeEquation[3])) / toBeDividedBy),
         };
-
-        return calculateSpaceDistance(pointOfInterSection, new double[]{firstPos[0], firstPos[1], firstPos[2]});
     }
 
     public static double[] calculateCrossProduct(double[] vector1, double[] vector2)

@@ -1,13 +1,19 @@
 package tor.visualHandling;
 
+import tor.Camera;
 import tor.Manager;
 import tor.shapeHandling.Shape;
 import tor.shapeHandling.Side;
 import tor.shapeHandling.Point;
 
+import static tor.visualHandling.PerspectiveMath.*;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.List;
+
+import static java.lang.Math.*;
 
 public class Renderer extends JPanel
 {
@@ -36,15 +42,33 @@ public class Renderer extends JPanel
         }
     }
 
-    public void paintHorizon(Graphics graphics)
+    public static ArrayList<Integer[]> putWithinView(Side side, Camera camera, Side[] frustumSides)
+    {
+        int numOfCorners = side.getCorners().length, i = 0;
+        ArrayList<Integer[]> finalScreenPos = new ArrayList<>();
+        for (Point point : side.getCorners()) {
+            int[] screenPos = makeRelative(point.getX(), point.getY(), point.getZ(), camera);
+            //determines if the point is good, or needs to check for frustum intersections as substitute
+            if (isOnScreen(screenPos)) {
+                finalScreenPos.add(new Integer[]{screenPos[0], screenPos[1]});
+            } else {
+
+            }
+        }
+
+
+        return finalScreenPos;
+    }
+
+    private void paintHorizon(Graphics graphics)
     {
         graphics.setColor(new Color(255, 255, 83));
         graphics.fillRect(0, 0, manager.getWindow().getWidth(), manager.getWindow().getHeight());
         graphics.setColor(new Color(255, 153, 0));
-        graphics.fillRect(0, PerspectiveMath.setHorizonLevel(manager.getCamera()), manager.getWindow().getWidth(), manager.getWindow().getHeight());
+        graphics.fillRect(0, setHorizonLevel(manager.getCamera()), manager.getWindow().getWidth(), manager.getWindow().getHeight());
     }
 
-    public void paintPixel(Graphics2D graphics2D, Side side, int i, int j)
+    private void paintPixel(Graphics2D graphics2D, Side side, int i, int j)
     {
         if (side == null) {
             return;
@@ -56,7 +80,7 @@ public class Renderer extends JPanel
         graphics2D.fillRect(i, j, 1, 1);
     }
 
-    public ArrayList<Frame> findContainedBy(ArrayList<Frame> frames, int i, int j)
+    private ArrayList<Frame> findContainedBy(ArrayList<Frame> frames, int i, int j)
     {
         ArrayList<Frame> containedBy = new ArrayList<>();
         java.awt.Point asPoint = new java.awt.Point(i, j);
@@ -68,15 +92,15 @@ public class Renderer extends JPanel
         return containedBy;
     }
 
-    public Side findClosestSide(ArrayList<Frame> containedBy, int i, int j)
+    private Side findClosestSide(ArrayList<Frame> containedBy, int i, int j)
     {
         double distance = Double.MAX_VALUE;
         Side currentClosestSide = null;
         double[] secondRayPosition;
         if (!containedBy.isEmpty()) {
-            secondRayPosition = PerspectiveMath.createSecondRayPosition(i, j, manager);
+            secondRayPosition = createSecondRayPosition(i, j, manager);
             for (Frame frame : containedBy) {
-                double newDistance = PerspectiveMath.calculateDistanceToIntersection(frame.side, manager.getCamera().getPosition(), secondRayPosition);
+                double newDistance = calculateSpaceDistance(manager.getCamera().getPosition(), calculateIntersectionPoint(frame.side, manager.getCamera().getPosition(), secondRayPosition));
 
                 if (newDistance < distance) {
                     distance = newDistance;
@@ -87,23 +111,211 @@ public class Renderer extends JPanel
         return currentClosestSide;
     }
 
-    public ArrayList<Frame> calculateFrames()
+    private ArrayList<Frame> calculateFrames()
     {
+        //TODO: construct frustum sides AS THE CAMERA IS SET for the frame
+        Point[] frustumCorners = calculateFrustumCorners();
+        Side[] frustumSides = calculateFrustumSides(frustumCorners);
         ArrayList<Frame> frames = new ArrayList<>();
         for (Shape shape : manager.getScene().getShapes()) {
             for (Side side : shape.getSides()) {
-                int numberOfCorners = side.getCorners().length;
+                /*int numberOfCorners = side.getCorners().length;
                 int[] x = new int[numberOfCorners], y = new int[numberOfCorners];
                 int i = 0;
                 for (Point point : side.getCorners()) {
                     //int[] screenPosition = PerspectiveMath.makeRelative(point, manager.getCamera());
-                    int[] screenPosition = PerspectiveMath.makeRelative(point.getX(), point.getY(), point.getZ(), manager.getCamera());
+                    int[] screenPosition = makeRelative(point.getX(), point.getY(), point.getZ(), manager.getCamera());
                     x[i] = screenPosition[0];
                     y[i++] = screenPosition[1];
+                }*/
+                //is boss
+                ArrayList<Integer> finalScreenPosX = new ArrayList<>();
+                ArrayList<Integer> finalScreenPosY = new ArrayList<>();
+                Point exitPoint;
+                Point entryPoint;
+                boolean lastOutside = true;
+                for (int i = 0; i < side.getCorners().length; i++) {
+                    Point[] sideCorners = side.getCorners();
+                    Point point = side.getCorners()[i];
+                    int[] screenPos = makeRelative(point.getX(), point.getY(), point.getZ(), manager.getCamera());
+                    if (isOnScreen(screenPos)) {
+                        finalScreenPosX.add(screenPos[0]);
+                        finalScreenPosY.add(screenPos[1]);
+                        lastOutside = false;
+                        exitPoint = null;
+                        entryPoint = null;
+                    } else {
+                        //TODO: add a check that checks if a intersection actually is on the edge of the field of view
+                        //or that could come to knowledge if the relative point then isn't on screen, that I can see more easily
+                        ArrayList<Point> validIntersections = new ArrayList<>();
+                        Point lastPoint = side.getCorners()[chooseIndex(sideCorners.length,i - 1)];
+                        Point nextPoint = side.getCorners()[chooseIndex(sideCorners.length,i + 1)];
+                        ArrayList<Point> onLineBack = new ArrayList<>();
+                        ArrayList<Point> onLineForward = new ArrayList<>();
+                        if (!lastOutside) {
+                            for (Side frustumSide : frustumSides) {
+                                Point intersection = new Point(calculateIntersectionPoint(frustumSide, point.getPosition(), lastPoint.getPosition()));
+                                if (isWithinSpaceRange(intersection, point, lastPoint)) {
+                                    onLineBack.add(intersection);
+                                }
+                            }
+                            //TODO: check before if a point is even visible on screen before addding it, if it isn't then skip it, add the rest
+                            validIntersections.addAll(sortByFurthestDistance(onLineBack, point));
+                            exitPoint = onLineBack.get(onLineBack.size() - 1);
+                            //TODO: check if a corner is contained by the triangle that is formed by this point, the one previous and the one in front, if so add it to finalScreenPos before the entry points
+                            int[] triangleTestX = new int[3];
+                            int[] triangleTestY = new int[3];
+                            int[] cornerPos = makeRelative(point, manager.getCamera());
+                            //TODO: need to add failsafe for overshooting index
+                            triangleTestX[0] = cornerPos[0];
+                            triangleTestY[0] = cornerPos[1];
+                            cornerPos = makeRelative(side.getCorners()[chooseIndex(sideCorners.length,i - 1)], manager.getCamera());
+                            triangleTestX[1] = cornerPos[0];
+                            triangleTestY[1] = cornerPos[1];
+                            cornerPos = makeRelative(side.getCorners()[chooseIndex(sideCorners.length,i + 1)], manager.getCamera());
+                            triangleTestX[2] = cornerPos[0];
+                            triangleTestY[2] = cornerPos[1];
+                            Polygon polyCheck = new Polygon(triangleTestX, triangleTestY, triangleTestX.length);
+                            for (Point corner : frustumCorners) {
+                                int[] cornerCheckPos = makeRelative(corner, manager.getCamera());
+                                if (polyCheck.contains(cornerCheckPos[0], cornerCheckPos[1])) {
+                                    validIntersections.add(corner);
+                                }
+                            }
+                        }
+                        for (Side frustumSide : frustumSides) {
+                            Point intersection = new Point(calculateIntersectionPoint(frustumSide, point.getPosition(), nextPoint.getPosition()));
+                            if (isWithinSpaceRange(intersection, point, nextPoint)) {
+                                validIntersections.add(intersection);
+                            }
+                        }
+
+                        validIntersections.addAll(sortByShortestDistance(onLineForward, point));
+
+                        //make relative, all intersection points
+
+                        //and save to finalScreenPositions
+                        lastOutside = true;
+                    }
                 }
+                int[] x = unpack(finalScreenPosX.toArray(new Integer[1]));
+                int[] y = unpack(finalScreenPosY.toArray(new Integer[1]));
                 frames.add(new Frame(side, new Polygon(x, y, x.length)));
             }
         }
         return frames;
+    }
+
+    public static int chooseIndex(List list, int wantedIndex)
+    {
+        if (wantedIndex < list.size() && wantedIndex >= 0) {
+            return wantedIndex;
+        } else if (wantedIndex >= list.size()) {
+            return 0;
+        } /*else if (wantedIndex < 0){
+            return list.size()-1;
+        }*/ else {
+            return list.size() - 1;
+        }
+    }
+
+    public static int chooseIndex(int size, int wantedIndex)
+    {
+        if (wantedIndex < size && wantedIndex >= 0) {
+            return wantedIndex;
+        } else if (wantedIndex >= size) {
+            return 0;
+        } /*else if (wantedIndex < 0){
+            return list.size()-1;
+        }*/ else {
+            return size - 1;
+        }
+    }
+
+    public static ArrayList<Point> sortByFurthestDistance(ArrayList<Point> intersectionPoints, Point activePoint)
+    {
+        ArrayList<Point> sorted = new ArrayList<>();
+        while (true) {
+            double currentFurthestDistance = 0;
+            Point currentFurthestPoint = null;
+            for (Point point : intersectionPoints) {
+                double distance = calculateSpaceDistance(point.getPosition(), activePoint.getPosition());
+                if (distance > currentFurthestDistance) {
+                    currentFurthestPoint = point;
+                    currentFurthestDistance = distance;
+                }
+            }
+            sorted.add(currentFurthestPoint);
+            intersectionPoints.remove(currentFurthestPoint);
+            if (intersectionPoints.size() == 0) {
+                return sorted;
+            }
+        }
+    }
+
+    public static ArrayList<Point> sortByShortestDistance(ArrayList<Point> intersectionPoints, Point activePoint)
+    {
+        ArrayList<Point> sorted = new ArrayList<>();
+        while (true) {
+            double currentClosestDistance = Double.MAX_VALUE;
+            Point currentClosestPoint = null;
+            for (Point point : intersectionPoints) {
+                double distance = calculateSpaceDistance(point.getPosition(), activePoint.getPosition());
+                if (distance < currentClosestDistance) {
+                    currentClosestPoint = point;
+                    currentClosestDistance = distance;
+                }
+            }
+            sorted.add(currentClosestPoint);
+            intersectionPoints.remove(currentClosestPoint);
+            if (intersectionPoints.size() == 0) {
+                return sorted;
+            }
+        }
+    }
+
+    public static int[] unpack(Integer[] wrapper)
+    {
+        int[] primitive = new int[wrapper.length];
+        int i = 0;
+        for (Integer I : wrapper) {
+            primitive[i++] = I;
+        }
+        return primitive;
+    }
+
+    public Point[] calculateFrustumCorners()
+    {
+        //TODO: Move this method to be called when the camera has moved, only! saves processing power
+        Camera camera = manager.getCamera();
+        double horizontalAngle = camera.getHorizontalAngle() + camera.getHorizontalFOV() / 2;
+        double verticalAngle = camera.getVerticalAngle() + camera.getVerticalFOV() / 2;
+        double topPos = atan(verticalAngle * PI / 180) + camera.getZ();
+        verticalAngle -= camera.getVerticalFOV();
+        double botPos = atan(verticalAngle * PI / 180) + camera.getZ();
+        double leftYPos = asin(horizontalAngle * PI / 180) + camera.getY();
+        double leftXPos = acos(horizontalAngle * PI / 180) + camera.getX();
+        horizontalAngle -= camera.getHorizontalAngle();
+        double rightYPos = asin(horizontalAngle * PI / 180) + camera.getY();
+        double rightXPos = acos(horizontalAngle * PI / 180) + camera.getX();
+
+        //TODO: check if correctly implemented and calculated
+        //topleft, topright, botleft, botright
+        return new Point[]{new Point(leftXPos, leftYPos, topPos), new Point(rightXPos, rightYPos, topPos), new Point(leftXPos, leftYPos, botPos), new Point(rightXPos, rightYPos, botPos)};
+    }
+
+    public Side[] calculateFrustumSides(Point[] corners)
+    {
+        Camera camera = manager.getCamera();
+        Side[] frustumSides = new Side[4];
+        //Top
+        frustumSides[0] = new Side(new Point(camera.getX(), camera.getY(), camera.getZ()), corners[0], corners[1]);
+        //Bottom
+        frustumSides[1] = new Side(new Point(camera.getX(), camera.getY(), camera.getZ()), corners[2], corners[3]);
+        //Left
+        frustumSides[2] = new Side(new Point(camera.getX(), camera.getY(), camera.getZ()), corners[0], corners[2]);
+        //Right
+        frustumSides[3] = new Side(new Point(camera.getX(), camera.getY(), camera.getZ()), corners[1], corners[3]);
+        return frustumSides;
     }
 }

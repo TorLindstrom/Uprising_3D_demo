@@ -186,16 +186,13 @@ public class Renderer extends JPanel
                                 onLineForward.add(intersection);
                             }
                         }
-
                         validIntersections.addAll(sortByShortestDistance(removeInvisible(onLineForward), point));
-
                         //remove duplicate corners
                         for (Point corner: frustumCorners){
                             while (validIntersections.indexOf(corner) != validIntersections.lastIndexOf(corner)){
                                 validIntersections.remove(validIntersections.get(validIntersections.lastIndexOf(corner)));
                             }
                         }
-
                         //make relative, all intersection points
                         for (Point preRelative: validIntersections) {
                             if (preRelative == null){
@@ -205,7 +202,6 @@ public class Renderer extends JPanel
                             finalScreenPosX.add(preliminaryScreenPos[0]);
                             finalScreenPosY.add(preliminaryScreenPos[1]);
                         }
-
                         //and save to finalScreenPositions
                         lastOutside = true;
                     }
@@ -222,6 +218,9 @@ public class Renderer extends JPanel
     public ArrayList<Point> removeInvisible(ArrayList<Point> toBeQueried){
         ArrayList<Point> visible = new ArrayList<>();
         for (Point point: toBeQueried){
+            if (point == null){
+                break;
+            }
             if (isOnScreen(makeRelative(point, manager.getCamera()))){
                 visible.add(point);
             }
@@ -283,6 +282,9 @@ public class Renderer extends JPanel
             double currentClosestDistance = Double.MAX_VALUE;
             Point currentClosestPoint = null;
             for (Point point : intersectionPoints) {
+                if (point == null){
+                    return sorted;
+                }
                 double distance = calculateSpaceDistance(point.getPosition(), activePoint.getPosition());
                 if (distance < currentClosestDistance) {
                     currentClosestPoint = point;
@@ -316,12 +318,12 @@ public class Renderer extends JPanel
         Camera camera = manager.getCamera();
         double horizontalAngle = camera.getHorizontalAngle() + camera.getHorizontalFOV() / 2;
         double verticalAngle = camera.getVerticalAngle() + camera.getVerticalFOV() / 2;
-        double topPos = atan(verticalAngle * PI / 180) + camera.getZ();
+        double topPos = asin(verticalAngle * PI / 180) + camera.getZ();
         verticalAngle -= camera.getVerticalFOV();
-        double botPos = atan(verticalAngle * PI / 180) + camera.getZ();
+        double botPos = asin(verticalAngle * PI / 180) + camera.getZ();
         double leftYPos = asin(horizontalAngle * PI / 180) + camera.getY();
         double leftXPos = acos(horizontalAngle * PI / 180) + camera.getX();
-        horizontalAngle -= camera.getHorizontalAngle();
+        horizontalAngle -= camera.getHorizontalFOV();
         double rightYPos = asin(horizontalAngle * PI / 180) + camera.getY();
         double rightXPos = acos(horizontalAngle * PI / 180) + camera.getX();
 

@@ -131,8 +131,6 @@ public class Renderer extends JPanel
                 //is boss
                 ArrayList<Integer> finalScreenPosX = new ArrayList<>();
                 ArrayList<Integer> finalScreenPosY = new ArrayList<>();
-                Point exitPoint;
-                Point entryPoint;
                 boolean lastOutside = true;
                 for (int i = 0; i < side.getCorners().length; i++) {
                     Point[] sideCorners = side.getCorners();
@@ -142,10 +140,8 @@ public class Renderer extends JPanel
                         finalScreenPosX.add(screenPos[0]);
                         finalScreenPosY.add(screenPos[1]);
                         lastOutside = false;
-                        exitPoint = null;
-                        entryPoint = null;
                     } else {
-                        //TODO: add a check that checks if a intersection actually is on the edge of the field of view
+                        //TODO: add a check that checks if an intersection actually is on the edge of the field of view
                         //or that could come to knowledge if the relative point then isn't on screen, that I can see more easily
                         ArrayList<Point> validIntersections = new ArrayList<>();
                         Point lastPoint = side.getCorners()[chooseIndex(sideCorners.length,i - 1)];
@@ -160,13 +156,12 @@ public class Renderer extends JPanel
                                 }
                             }
                             //TODO: check before if a point is even visible on screen before addding it, if it isn't then skip it, add the rest
-                            validIntersections.addAll(sortByFurthestDistance(onLineBack, point));
-                            exitPoint = onLineBack.get(onLineBack.size() - 1);
+                            validIntersections.addAll(sortByFurthestDistance(removeInvisible(onLineBack), point));
+                            //corner test
                             //TODO: check if a corner is contained by the triangle that is formed by this point, the one previous and the one in front, if so add it to finalScreenPos before the entry points
                             int[] triangleTestX = new int[3];
                             int[] triangleTestY = new int[3];
                             int[] cornerPos = makeRelative(point, manager.getCamera());
-                            //TODO: need to add failsafe for overshooting index
                             triangleTestX[0] = cornerPos[0];
                             triangleTestY[0] = cornerPos[1];
                             cornerPos = makeRelative(side.getCorners()[chooseIndex(sideCorners.length,i - 1)], manager.getCamera());
@@ -176,23 +171,40 @@ public class Renderer extends JPanel
                             triangleTestX[2] = cornerPos[0];
                             triangleTestY[2] = cornerPos[1];
                             Polygon polyCheck = new Polygon(triangleTestX, triangleTestY, triangleTestX.length);
+                            ArrayList<Point> containedCorners = new ArrayList<>();
                             for (Point corner : frustumCorners) {
                                 int[] cornerCheckPos = makeRelative(corner, manager.getCamera());
                                 if (polyCheck.contains(cornerCheckPos[0], cornerCheckPos[1])) {
-                                    validIntersections.add(corner);
+                                    containedCorners.add(corner);
                                 }
                             }
+                            validIntersections.addAll(sortByShortestDistance(containedCorners, point));
                         }
                         for (Side frustumSide : frustumSides) {
                             Point intersection = new Point(calculateIntersectionPoint(frustumSide, point.getPosition(), nextPoint.getPosition()));
                             if (isWithinSpaceRange(intersection, point, nextPoint)) {
-                                validIntersections.add(intersection);
+                                onLineForward.add(intersection);
                             }
                         }
 
-                        validIntersections.addAll(sortByShortestDistance(onLineForward, point));
+                        validIntersections.addAll(sortByShortestDistance(removeInvisible(onLineForward), point));
+
+                        //remove duplicate corners
+                        for (Point corner: frustumCorners){
+                            while (validIntersections.indexOf(corner) != validIntersections.lastIndexOf(corner)){
+                                validIntersections.remove(validIntersections.get(validIntersections.lastIndexOf(corner)));
+                            }
+                        }
 
                         //make relative, all intersection points
+                        for (Point preRelative: validIntersections) {
+                            if (preRelative == null){
+                                break;
+                            }
+                            int[] preliminaryScreenPos = makeRelative(preRelative, manager.getCamera());
+                            finalScreenPosX.add(preliminaryScreenPos[0]);
+                            finalScreenPosY.add(preliminaryScreenPos[1]);
+                        }
 
                         //and save to finalScreenPositions
                         lastOutside = true;
@@ -200,10 +212,21 @@ public class Renderer extends JPanel
                 }
                 int[] x = unpack(finalScreenPosX.toArray(new Integer[1]));
                 int[] y = unpack(finalScreenPosY.toArray(new Integer[1]));
+                //TODO: skip all those that aren't on the screen
                 frames.add(new Frame(side, new Polygon(x, y, x.length)));
             }
         }
         return frames;
+    }
+
+    public ArrayList<Point> removeInvisible(ArrayList<Point> toBeQueried){
+        ArrayList<Point> visible = new ArrayList<>();
+        for (Point point: toBeQueried){
+            if (isOnScreen(makeRelative(point, manager.getCamera()))){
+                visible.add(point);
+            }
+        }
+        return visible;
     }
 
     public static int chooseIndex(List list, int wantedIndex)
@@ -279,6 +302,9 @@ public class Renderer extends JPanel
         int[] primitive = new int[wrapper.length];
         int i = 0;
         for (Integer I : wrapper) {
+            if (I == null){
+                break;
+            }
             primitive[i++] = I;
         }
         return primitive;

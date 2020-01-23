@@ -89,6 +89,24 @@ public class PerspectiveMath
 
     public static int[] makeRelative(Point pos, Camera camera)
     {
+
+        //Damn it all, need depth of field anyways
+        //TODO: implement depth of field from old makeRelative method, needed for it to make sense to hoomans
+
+        double relativeX = pos.getX() - camera.getX();
+        double relativeY = pos.getY() - camera.getY();
+        double relativeZ = pos.getZ() - camera.getZ();
+        int[] screenPos = new int[2];
+        double horizontalPlaneAngle = (Math.atan2(relativeY, relativeX) * (180 / PI)) - camera.getHorizontalAngle();
+        double verticalPlaneAngle = (Math.atan(relativeZ / calculatePaneDistance(relativeX, relativeY)) * (180 / PI)) - camera.getVerticalAngle();
+        screenPos[0] = (int) (-tan((horizontalPlaneAngle * PI / 180) / 4) * width / ((camera.getHorizontalFOV() / 2) / 180)) + width / 2;
+        screenPos[1] = (int) (-tan((verticalPlaneAngle * PI / 180) / 4) * height / ((camera.getVerticalFOV() / 2) / 180)) + height / 2;
+        return screenPos;
+        //TODO: vertical angle near edges need to be determined by a viewing frustum for accuracy, not done here
+    }
+
+    /*public static int[] makeRelative(Point pos, Camera camera)
+    {
         double relativeX = pos.getX() - camera.getX();
         double relativeY = pos.getY() - camera.getY();
         double relativeZ = pos.getZ() - camera.getZ();
@@ -110,7 +128,7 @@ public class PerspectiveMath
         double relativeDepth = cos(verticalPlaneAngle) * zDepthDistance;
 
         double halfWidthAtDepth = tan(camera.getHorizontalFOV() / 2 * (PI / 180)) * relativeDepth;
-        double halfWidthFromLeft = halfWidthAtDepth + sin(horizontalPlaneAngle) * calculateSpaceDistance(relativeX, relativeY, relativeZ) /*xyDistance*/; //width deep from left
+        double halfWidthFromLeft = halfWidthAtDepth + sin(horizontalPlaneAngle) * calculateSpaceDistance(relativeX, relativeY, relativeZ) *//*xyDistance*//*; //width deep from left
         double percentageFromTheLeft = halfWidthFromLeft / (halfWidthAtDepth * 2);
 
         double halfHeightAtDepth = tan(camera.getVerticalFOV() / 2 * (PI / 180)) * relativeDepth;
@@ -120,7 +138,7 @@ public class PerspectiveMath
         screenPos[0] = (int) ((width * percentageFromTheLeft) + 0.5);
         screenPos[1] = (int) ((height * percentageFromUp) + 0.5);
         return screenPos;
-    }
+    }*/
 
     public static int setHorizonLevel(Camera camera)
     {
@@ -166,17 +184,17 @@ public class PerspectiveMath
 
     public static boolean isWithinRange(double value, double lower, double upper)
     {
-        return value < upper && value > lower;
+        return value <= upper && value >= lower;
     }
 
     public static boolean isWithinSpaceRange(Point point, Point borderingTop, Point borderingBot)
     {
-        return point.getX() < max(borderingBot.getX(), borderingTop.getX()) &&
-                point.getX() > min(borderingBot.getX(), borderingTop.getX()) &&
-                point.getY() < max(borderingBot.getY(), borderingTop.getY()) &&
-                point.getY() > min(borderingBot.getY(), borderingTop.getY()) &&
-                point.getZ() < max(borderingBot.getZ(), borderingTop.getZ()) &&
-                point.getZ() > min(borderingBot.getZ(), borderingTop.getZ());
+        return point.getX() <= max(borderingBot.getX(), borderingTop.getX()) &&
+                point.getX() >= min(borderingBot.getX(), borderingTop.getX()) &&
+                point.getY() <= max(borderingBot.getY(), borderingTop.getY()) &&
+                point.getY() >= min(borderingBot.getY(), borderingTop.getY()) &&
+                point.getZ() <= max(borderingBot.getZ(), borderingTop.getZ()) &&
+                point.getZ() >= min(borderingBot.getZ(), borderingTop.getZ());
     }
 
     public static Integer[] findFrustumIntersection(Side[] frustumSides, double[] currentPos, double[] checkingPos)

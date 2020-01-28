@@ -17,10 +17,8 @@ public class PerspectiveMath
 
     public static int[] makeRelative(double x, double y, double z, Camera camera)
     {
-
         //Damn it all, need depth of field anyways
         //TODO: implement depth of field from old makeRelative method, needed for it to make sense to hoomans
-
         double relativeX = x - camera.getX();
         double relativeY = y - camera.getY();
         double relativeZ = z - camera.getZ();
@@ -31,6 +29,20 @@ public class PerspectiveMath
         screenPos[1] = (int) (-tan((verticalPlaneAngle * PI / 180) / 4) * height / ((camera.getVerticalFOV() / 2) / 180)) + height / 2;
         return screenPos;
         //TODO: vertical angle near edges need to be determined by a viewing frustum for accuracy, not done here
+    }
+
+    public static int[] makeRelative(Point pos, Camera camera)
+    {
+        return makeRelative(pos.getX(), pos.getY(), pos.getZ(), camera);
+        /*double relativeX = pos.getX() - camera.getX();
+        double relativeY = pos.getY() - camera.getY();
+        double relativeZ = pos.getZ() - camera.getZ();
+        int[] screenPos = new int[2];
+        double horizontalPlaneAngle = (Math.atan2(relativeY, relativeX) * (180 / PI)) - camera.getHorizontalAngle();
+        double verticalPlaneAngle = (Math.atan(relativeZ / calculatePaneDistance(relativeX, relativeY)) * (180 / PI)) - camera.getVerticalAngle();
+        screenPos[0] = (int) (tan((horizontalPlaneAngle * PI / 180) / 4) * width / ((camera.getHorizontalFOV() / 2) / 180)) + width / 2;
+        screenPos[1] = (int) (tan((verticalPlaneAngle * PI / 180) / 4) * height / ((camera.getVerticalFOV() / 2) / 180)) + height / 2;
+        return screenPos;*/
     }
 
     /*public static int[] makeRelative(double x, double y, double z, Camera camera)
@@ -85,24 +97,6 @@ public class PerspectiveMath
         screenPos[0] = (int) ((width * percentageFromTheLeft) + 0.5);
         screenPos[1] = (int) ((height * percentageFromUp) + 0.5);
         return screenPos;
-    }
-
-    public static int[] makeRelative(Point pos, Camera camera)
-    {
-
-        //Damn it all, need depth of field anyways
-        //TODO: implement depth of field from old makeRelative method, needed for it to make sense to hoomans
-
-        double relativeX = pos.getX() - camera.getX();
-        double relativeY = pos.getY() - camera.getY();
-        double relativeZ = pos.getZ() - camera.getZ();
-        int[] screenPos = new int[2];
-        double horizontalPlaneAngle = (Math.atan2(relativeY, relativeX) * (180 / PI)) - camera.getHorizontalAngle();
-        double verticalPlaneAngle = (Math.atan(relativeZ / calculatePaneDistance(relativeX, relativeY)) * (180 / PI)) - camera.getVerticalAngle();
-        screenPos[0] = (int) (-tan((horizontalPlaneAngle * PI / 180) / 4) * width / ((camera.getHorizontalFOV() / 2) / 180)) + width / 2;
-        screenPos[1] = (int) (-tan((verticalPlaneAngle * PI / 180) / 4) * height / ((camera.getVerticalFOV() / 2) / 180)) + height / 2;
-        return screenPos;
-        //TODO: vertical angle near edges need to be determined by a viewing frustum for accuracy, not done here
     }
 
     /*public static int[] makeRelative(Point pos, Camera camera)

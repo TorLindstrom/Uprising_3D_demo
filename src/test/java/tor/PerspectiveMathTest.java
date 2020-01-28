@@ -4,6 +4,7 @@ import static tor.visualHandling.PerspectiveMath.*;
 
 import org.junit.Test;
 import tor.shapeHandling.Point;
+import static tor.visualHandling.Window.*;
 
 import static org.junit.Assert.*;
 
@@ -13,17 +14,49 @@ public class PerspectiveMathTest
     public void shouldAnswerWithTrue()
     {
         Camera camera = new Camera(new Point(-300, 200, 200));
-        double[] pos = new double[]{-299.33254278397163, 200.90333911076652, 200.5159768315343};
+        //Top left
+        double[] rawPos = new double[]{-229.289, 270.711, 253.729};
+        Point pos = new Point(rawPos);
         assertEquals(0, makeRelative(pos, camera)[0], 1);
         assertEquals(0, makeRelative(pos, camera)[1], 1);
-        pos = new double[]{-298.07262960835345, 199.64342593514834, 200.5159768315343};
-        assertEquals(0, makeRelative(pos, camera)[0], 1);
+        //Top right
+        pos = new Point(new double[]{-229.289, 129.289, 253.729});
+        assertEquals(800, makeRelative(pos, camera)[0], 1);
         assertEquals(0, makeRelative(pos, camera)[1], 1);
-        pos = new double[]{-299.33254278397163, 200.90333911076652, 199.4840231684657};
+        //Bot left
+        pos = new Point(new double[]{-229.289, 270.711, 146.271});
         assertEquals(0, makeRelative(pos, camera)[0], 1);
-        assertEquals(0, makeRelative(pos, camera)[1], 1);
-        pos = new double[]{-298.07262960835345, 199.64342593514834, 199.4840231684657};
-        assertEquals(0, makeRelative(pos, camera)[0], 1);
-        assertEquals(0, makeRelative(pos, camera)[1], 1);
+        assertEquals(500, makeRelative(pos, camera)[1], 1);
+        //Bot right
+        pos = new Point(new double[]{-229.289, 129.289, 146.271});
+        assertEquals(800, makeRelative(pos, camera)[0], 1);
+        assertEquals(500, makeRelative(pos, camera)[1], 1);
     }
+
+    //------------------------one step authenticated tests
+
+    @Test
+    public void testCenterCalibrationOld()
+    {
+        Camera camera = new Camera(new Point(-300, 200, 200));
+        //Top left
+        double[] pos = new double[]{300, 200, 200};
+        assertEquals(width/2, makeRelative(pos, camera)[0]);
+        assertEquals(height/2, makeRelative(pos, camera)[1]);
+
+    }
+
+    @Test
+    public void testCenterCalibrationNew()
+    {
+        Camera camera = new Camera(new Point(-300, 200, 200));
+        //Top left
+        double[] pos = new double[]{300, 200, 200};
+        Point point = new Point(pos);
+        assertEquals(width/2, makeRelative(point, camera)[0]);
+        assertEquals(height/2, makeRelative(point, camera)[1]);
+
+    }
+
+    //------------------------two step authenticated tests
 }

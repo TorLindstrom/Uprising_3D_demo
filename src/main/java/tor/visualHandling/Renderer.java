@@ -11,13 +11,12 @@ import static tor.visualHandling.PerspectiveMath.*;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.List;
 
 import static java.lang.Math.*;
 
 public class Renderer extends JPanel
 {
-    Manager manager;
+    public static Manager manager;
 
     public Renderer(Manager manager)
     {
@@ -155,30 +154,30 @@ public class Renderer extends JPanel
                                     onLineBack.add(intersection);
                                 }
                             }
-                            //TODO: check before if a point is even visible on screen before addding it, if it isn't then skip it, add the rest
+                            //TODO: check before if a point is even visible on screen before adding it, if it isn't then skip it, add the rest
                             validIntersections.addAll(sortByFurthestDistance(removeInvisible(onLineBack), point));
-                            //corner test
-                            //TODO: check if a corner is contained by the triangle that is formed by this point, the one previous and the one in front, if so add it to finalScreenPos before the entry points
-                            int[] triangleTestX = new int[3];
-                            int[] triangleTestY = new int[3];
-                            int[] cornerPos = makeRelative(point, manager.getCamera());
-                            triangleTestX[0] = cornerPos[0];
-                            triangleTestY[0] = cornerPos[1];
-                            cornerPos = makeRelative(side.getCorners()[chooseIndex(sideCorners.length,i - 1)], manager.getCamera());
-                            triangleTestX[1] = cornerPos[0];
-                            triangleTestY[1] = cornerPos[1];
-                            cornerPos = makeRelative(side.getCorners()[chooseIndex(sideCorners.length,i + 1)], manager.getCamera());
-                            triangleTestX[2] = cornerPos[0];
-                            triangleTestY[2] = cornerPos[1];
-                            Polygon polyCheck = new Polygon(triangleTestX, triangleTestY, triangleTestX.length);
-                            ArrayList<Point> containedCorners = new ArrayList<>();
-                            for (Point corner : frustumCorners) {
-                                int[] cornerCheckPos = makeRelative(corner, manager.getCamera());
-                                if (polyCheck.contains(cornerCheckPos[0], cornerCheckPos[1])) {
-                                    containedCorners.add(corner);
-                                }
+                        }
+                        //corner test
+                        //TODO: check if a corner is contained by the triangle that is formed by this point, the one previous and the one in front,
+                        //if so add it to finalScreenPos before the entry points
+                        int[] triangleTestX = new int[3];
+                        int[] triangleTestY = new int[3];
+                        int[] cornerPos = makeRelative(point, manager.getCamera());
+                        triangleTestX[0] = cornerPos[0];
+                        triangleTestY[0] = cornerPos[1];
+                        cornerPos = makeRelative(side.getCorners()[chooseIndex(sideCorners.length,i + 1)], manager.getCamera());
+                        triangleTestX[1] = cornerPos[0];
+                        triangleTestY[1] = cornerPos[1];
+                        cornerPos = makeRelative(side.getCorners()[chooseIndex(sideCorners.length,i + 2)], manager.getCamera());
+                        triangleTestX[2] = cornerPos[0];
+                        triangleTestY[2] = cornerPos[1];
+                        Polygon polyCheck = new Polygon(triangleTestX, triangleTestY, triangleTestX.length);
+                        onLineForward = new ArrayList<>();
+                        for (Point corner : frustumCorners) {
+                            int[] cornerCheckPos = makeRelative(corner, manager.getCamera());
+                            if (polyCheck.contains(cornerCheckPos[0], cornerCheckPos[1])) {
+                                onLineForward.add(corner);
                             }
-                            validIntersections.addAll(sortByShortestDistance(containedCorners, point));
                         }
                         for (Side frustumSide : frustumSides) {
                             Point intersection = new Point(calculateIntersectionPoint(frustumSide, point.getPosition(), nextPoint.getPosition()));
@@ -196,19 +195,19 @@ public class Renderer extends JPanel
                         //make relative, all intersection points
                         for (Point preRelative: validIntersections) {
                             if (preRelative == null){
-                                break;
+                                continue;
                             }
+                            //duplicate makeRelative call, called before to check points before being added to list, save the processing power!!
                             int[] preliminaryScreenPos = makeRelative(preRelative, manager.getCamera());
+                            //and save to finalScreenPositions
                             finalScreenPosX.add(preliminaryScreenPos[0]);
                             finalScreenPosY.add(preliminaryScreenPos[1]);
                         }
-                        //and save to finalScreenPositions
                         lastOutside = true;
                     }
                 }
                 int[] x = unpack(finalScreenPosX.toArray(new Integer[1]));
                 int[] y = unpack(finalScreenPosY.toArray(new Integer[1]));
-                //TODO: skip all those that aren't on the screen
                 frames.add(new Frame(side, new Polygon(x, y, x.length)));
             }
         }
@@ -219,7 +218,7 @@ public class Renderer extends JPanel
         ArrayList<Point> visible = new ArrayList<>();
         for (Point point: toBeQueried){
             if (point == null){
-                break;
+                continue;
             }
             if (isOnScreen(makeRelative(point, manager.getCamera()))){
                 visible.add(point);
@@ -228,28 +227,13 @@ public class Renderer extends JPanel
         return visible;
     }
 
-    public static int chooseIndex(List list, int wantedIndex)
-    {
-        if (wantedIndex < list.size() && wantedIndex >= 0) {
-            return wantedIndex;
-        } else if (wantedIndex >= list.size()) {
-            return 0;
-        } /*else if (wantedIndex < 0){
-            return list.size()-1;
-        }*/ else {
-            return list.size() - 1;
-        }
-    }
-
     public static int chooseIndex(int size, int wantedIndex)
     {
         if (wantedIndex < size && wantedIndex >= 0) {
             return wantedIndex;
         } else if (wantedIndex >= size) {
             return 0;
-        } /*else if (wantedIndex < 0){
-            return list.size()-1;
-        }*/ else {
+        } else {
             return size - 1;
         }
     }
@@ -312,20 +296,20 @@ public class Renderer extends JPanel
         return primitive;
     }
 
-    public Point[] calculateFrustumCorners()
+    public static Point[] calculateFrustumCorners()
     {
         //TODO: Move this method to be called when the camera has moved, only! saves processing power
         Camera camera = manager.getCamera();
         double horizontalAngle = camera.getHorizontalAngle() + camera.getHorizontalFOV() / 2;
         double verticalAngle = camera.getVerticalAngle() + camera.getVerticalFOV() / 2;
-        double topPos = asin(verticalAngle * PI / 180) + camera.getZ();
+        double topPos = 100 * sin(verticalAngle * PI / 180) + camera.getZ();
         verticalAngle -= camera.getVerticalFOV();
-        double botPos = asin(verticalAngle * PI / 180) + camera.getZ();
-        double leftYPos = asin(horizontalAngle * PI / 180) + camera.getY();
-        double leftXPos = acos(horizontalAngle * PI / 180) + camera.getX();
+        double botPos = 100 * sin(verticalAngle * PI / 180) + camera.getZ();
+        double leftYPos = 100 * sin(horizontalAngle * PI / 180) + camera.getY();
+        double leftXPos = 100 * cos(horizontalAngle * PI / 180) + camera.getX();
         horizontalAngle -= camera.getHorizontalFOV();
-        double rightYPos = asin(horizontalAngle * PI / 180) + camera.getY();
-        double rightXPos = acos(horizontalAngle * PI / 180) + camera.getX();
+        double rightYPos = 100 * sin(horizontalAngle * PI / 180) + camera.getY();
+        double rightXPos = 100 * cos(horizontalAngle * PI / 180) + camera.getX();
 
         //TODO: check if correctly implemented and calculated
         //topleft, topright, botleft, botright

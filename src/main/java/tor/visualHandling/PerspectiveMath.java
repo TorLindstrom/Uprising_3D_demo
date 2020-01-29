@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 import static java.lang.Math.*;
 import static tor.visualHandling.Window.*;
+import static tor.visualHandling.Renderer.*;
 
 public class PerspectiveMath
 {
@@ -25,6 +26,7 @@ public class PerspectiveMath
         int[] screenPos = new int[2];
         double horizontalPlaneAngle = (Math.atan2(relativeY, relativeX) * (180 / PI)) - camera.getHorizontalAngle();
         double verticalPlaneAngle = (Math.atan(relativeZ / calculatePaneDistance(relativeX, relativeY)) * (180 / PI)) - camera.getVerticalAngle();
+        //something wrong with the FOV alter, too big zoom effect, frustum corners are not visible
         screenPos[0] = (int) (-tan((horizontalPlaneAngle * PI / 180) / 4) * width / ((camera.getHorizontalFOV() / 2) / 180)) + width / 2;
         screenPos[1] = (int) (-tan((verticalPlaneAngle * PI / 180) / 4) * height / ((camera.getVerticalFOV() / 2) / 180)) + height / 2;
         return screenPos;
@@ -194,6 +196,41 @@ public class PerspectiveMath
     public static Integer[] findFrustumIntersection(Side[] frustumSides, double[] currentPos, double[] checkingPos)
     {
         return null;
+    }
+
+    public static boolean isRayInsideFinitePlane(Side side, double[] camera, double[] corner)
+    {
+        double[] planeIntersectionPoint = calculateIntersectionPoint(side, camera, corner);
+        Point[] corners = side.getCorners();
+        //the line between 0 and 1 is already used below, only need to check the other sides
+        double[] midpoint = {(corners[0].getX() + corners[1].getX() / 2),
+                (corners[0].getY() + corners[1].getY() / 2),
+                (corners[0].getZ() + corners[1].getZ() / 2),};
+        double xDeltaIntersectionHitLine = midpoint[0] - planeIntersectionPoint[0];
+        double yDeltaIntersectionHitLine = midpoint[1] - planeIntersectionPoint[1];
+        double zDeltaIntersectionHitLine = midpoint[2] - planeIntersectionPoint[2];
+        int intersectionsWithAreaSides = 0;
+        for (int i = 1; i < corners.length; i++) {
+            //point on line is corner[i]
+            int index = chooseIndex(corners.length, i + 1);
+            double[] slopeOfCheckLine = {corners[index].getX() - corners[i].getX(),
+                    corners[index].getY() - corners[i].getY(),
+                    corners[index].getZ() - corners[i].getZ()};
+            //check if intersecting lines
+            double tValue = (corners[i].getX() + slopeOfCheckLine[0] - planeIntersectionPoint[0]) / xDeltaIntersectionHitLine;
+            //should be the value that is used to find the position one step down
+            double sValue = (planeIntersectionPoint[1] + yDeltaIntersectionHitLine * tValue - corners[i].getY()) / slopeOfCheckLine[1];
+            //sValue or tValue?
+            Point interSectionPoint = new Point(planeIntersectionPoint[0] + xDeltaIntersectionHitLine * sValue,
+                    planeIntersectionPoint[1] + yDeltaIntersectionHitLine * sValue,
+                    planeIntersectionPoint[2] + zDeltaIntersectionHitLine * sValue);
+            if ((planeIntersectionPoint[2] + zDeltaIntersectionHitLine * sValue
+                    == corners[i].getZ() + slopeOfCheckLine[2] * sValue)
+                    && isWithinSpaceRange(interSectionPoint, corners[i], corners[index])) {
+                intersectionsWithAreaSides++;
+            }
+        }
+        return intersectionsWithAreaSides == 1;
     }
 
 

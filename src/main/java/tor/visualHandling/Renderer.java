@@ -155,10 +155,11 @@ public class Renderer extends JPanel
                                 }
                             }
                             //TODO: check before if a point is even visible on screen before adding it, if it isn't then skip it, add the rest
+                            //duplicate makeRelative call
                             validIntersections.addAll(sortByFurthestDistance(removeInvisible(onLineBack), point));
                         }
                         //corner test
-                        //TODO: check if a corner is contained by the triangle that is formed by this point, the one previous and the one in front,
+                        /*//TODO: check if a corner is contained by the triangle that is formed by this point, the one previous and the one in front,
                         //if so add it to finalScreenPos before the entry points
                         int[] triangleTestX = new int[3];
                         int[] triangleTestY = new int[3];
@@ -172,19 +173,26 @@ public class Renderer extends JPanel
                         triangleTestX[2] = cornerPos[0];
                         triangleTestY[2] = cornerPos[1];
                         Polygon polyCheck = new Polygon(triangleTestX, triangleTestY, triangleTestX.length);
-                        onLineForward = new ArrayList<>();
                         for (Point corner : frustumCorners) {
                             int[] cornerCheckPos = makeRelative(corner, manager.getCamera());
                             if (polyCheck.contains(cornerCheckPos[0], cornerCheckPos[1])) {
                                 onLineForward.add(corner);
                             }
+                        }*/
+
+                        //now check if a ray traced from a corner intersects the side that is formed by the active, former, and next points, if so add it, then sort by distance
+                        for (Point corner: frustumCorners){
+                            //but! all corners will connect at some point, so which ones are valid?
+
                         }
+
                         for (Side frustumSide : frustumSides) {
                             Point intersection = new Point(calculateIntersectionPoint(frustumSide, point.getPosition(), nextPoint.getPosition()));
                             if (isWithinSpaceRange(intersection, point, nextPoint)) {
                                 onLineForward.add(intersection);
                             }
                         }
+                        //duplicate makeRelative call
                         validIntersections.addAll(sortByShortestDistance(removeInvisible(onLineForward), point));
                         //remove duplicate corners
                         for (Point corner: frustumCorners){

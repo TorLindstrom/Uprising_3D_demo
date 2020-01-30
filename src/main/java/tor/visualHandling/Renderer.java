@@ -183,9 +183,10 @@ public class Renderer extends JPanel
                         //now check if a ray traced from a corner intersects the side that is formed by the active, former, and next points, if so add it, then sort by distance
                         for (Point corner: frustumCorners){
                             //but! all corners will connect at some point, so which ones are valid?
-
+                            if (isRayInsideFinitePlane(side, manager.getCamera().getPosition(), corner.getPosition())){
+                                validIntersections.add(corner);
+                            }
                         }
-
                         for (Side frustumSide : frustumSides) {
                             Point intersection = new Point(calculateIntersectionPoint(frustumSide, point.getPosition(), nextPoint.getPosition()));
                             if (isWithinSpaceRange(intersection, point, nextPoint)) {

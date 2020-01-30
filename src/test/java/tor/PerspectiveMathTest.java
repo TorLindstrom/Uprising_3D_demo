@@ -4,6 +4,8 @@ import static tor.visualHandling.PerspectiveMath.*;
 
 import org.junit.Test;
 import tor.shapeHandling.Point;
+import tor.shapeHandling.Side;
+
 import static tor.visualHandling.Window.*;
 
 import static org.junit.Assert.*;
@@ -31,6 +33,25 @@ public class PerspectiveMathTest
         pos = new Point(new double[]{-229.289, 129.289, 146.271});
         assertEquals(800, makeRelative(pos, camera)[0], 1);
         assertEquals(500, makeRelative(pos, camera)[1], 1);
+    }
+
+    @Test
+    public void isRayInsideFinitePlaneInFront(){
+        assertTrue(isRayInsideFinitePlane(new Side(new Point(200, 200, 0),
+                new Point(200, -200, 0),
+                new Point(200, -200, 200),
+                new Point(200, 200, 200)),
+                new Point(0, 0, 100).getPosition(),
+                new Point(50, 0, 100).getPosition()));
+    }
+    @Test
+    public void isRayInsideFinitePlaneSkewed(){
+        assertTrue(isRayInsideFinitePlane(new Side(new Point(200, 200, 0),
+                        new Point(200, -200, 0),
+                        new Point(200, -200, 200),
+                        new Point(200, 200, 200)),
+                new Point(0, 0, 100).getPosition(),
+                new Point(50, 5, 100).getPosition()));
     }
 
     //------------------------one step authenticated tests

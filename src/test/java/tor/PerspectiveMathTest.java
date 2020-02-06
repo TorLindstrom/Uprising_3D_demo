@@ -35,12 +35,14 @@ public class PerspectiveMathTest
         assertEquals(500, makeRelative(pos, camera)[1], 1);
     }
 
+    //------------------------one step authenticated tests
+
     @Test
     public void isRayInsideFinitePlaneInFront(){
         assertTrue(isRayInsideFinitePlane(new Side(new Point(200, 200, 0),
-                new Point(200, -200, 0),
-                new Point(200, -200, 200),
-                new Point(200, 200, 200)),
+                        new Point(200, -200, 0),
+                        new Point(200, -200, 200),
+                        new Point(200, 200, 200)),
                 new Point(0, 0, 100).getPosition(),
                 new Point(50, 0, 100).getPosition()));
     }
@@ -54,7 +56,35 @@ public class PerspectiveMathTest
                 new Point(50, 5, 100).getPosition()));
     }
 
-    //------------------------one step authenticated tests
+    @Test
+    public void isRayOutsideFinitePlaneSkewed(){
+        assertFalse(isRayInsideFinitePlane(new Side(new Point(200, 200, 0),
+                        new Point(200, -200, 0),
+                        new Point(200, -200, 200),
+                        new Point(200, 200, 200)),
+                new Point(0, 0, 100).getPosition(),
+                new Point(50, 60, 100).getPosition()));
+    }
+
+    @Test
+    public void isRayInsideFiniteSkewedPlane(){
+        assertTrue(isRayInsideFinitePlane(new Side(new Point(200, 200, 0),
+                        new Point(250, -200, 0),
+                        new Point(250, -180, 200),
+                        new Point(200, 220, 200)),
+                new Point(0, 0, 100).getPosition(),
+                new Point(50, 0, 100).getPosition()));
+    }
+
+    @Test
+    public void isSkewedRayInsideFiniteSkewedPlane(){
+        assertTrue(isRayInsideFinitePlane(new Side(new Point(200, 200, 0),
+                        new Point(250, -200, 0),
+                        new Point(250, -180, 200),
+                        new Point(200, 220, 200)),
+                new Point(0, 0, 100).getPosition(),
+                new Point(50, 5, 105).getPosition()));
+    }
 
     @Test
     public void testCenterCalibrationOld()

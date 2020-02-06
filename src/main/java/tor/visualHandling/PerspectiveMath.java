@@ -198,145 +198,6 @@ public class PerspectiveMath
         return null;
     }
 
-    /*public static boolean isRayInsideFinitePlane(Side side, double[] camera, double[] corner)
-    {
-        double[] planeIntersectionPoint = calculateIntersectionPoint(side, camera, corner);
-        Point[] corners = side.getCorners();
-        //the line between 0 and 1 is already used below, only need to check the other sides
-        double[] midpoint = {(corners[0].getX() + corners[1].getX()) / 2,
-                (corners[0].getY() + corners[1].getY()) / 2,
-                (corners[0].getZ() + corners[1].getZ()) / 2,};
-        double xDeltaIntersectionHitLine = planeIntersectionPoint[0] - midpoint[0];
-        double yDeltaIntersectionHitLine = planeIntersectionPoint[1] - midpoint[1];
-        double zDeltaIntersectionHitLine = planeIntersectionPoint[2] - midpoint[2];
-        int intersectionsWithAreaSides = 0;
-        for (int i = 1; i < corners.length; i++) {
-            //point on line is corner[i]
-            int index = chooseIndex(corners.length, i + 1);
-            double[] slopeOfCheckLine = {corners[index].getX() - corners[i].getX(),
-                    corners[index].getY() - corners[i].getY(),
-                    corners[index].getZ() - corners[i].getZ()};
-            //check if intersecting lines
-
-            double[] tValueRelativeS = new double[2];
-            double[] sValueRelativeS = new double[2];
-            boolean sRelSet = false;
-            boolean tRelSet = false;
-            double tValue = -1;
-            double sValue = -1;
-            boolean sSet = false;
-            boolean tSet = false;
-            char setIn = ' ';
-
-            if (xDeltaIntersectionHitLine == 0) {
-                if (slopeOfCheckLine[0] != 0) {
-                    sValue = (midpoint[0] - corners[i].getX()) / slopeOfCheckLine[0];
-                    sRelSet = true;
-                } else if (midpoint[0] != corners[i].getX()) {
-                    //then can't intersect, continue
-                    continue;
-                }
-            } else {
-                if (slopeOfCheckLine[0] != 0) {
-                    tValueRelativeS[0] = (corners[i].getX() - midpoint[0]) / xDeltaIntersectionHitLine;
-                    tValueRelativeS[1] = slopeOfCheckLine[0] / xDeltaIntersectionHitLine;
-                    tRelSet = true;
-                } else {
-                    tValue = (corners[i].getX() - midpoint[0]) / xDeltaIntersectionHitLine;
-                    tSet = true;
-                }
-                setIn ='x';
-            }
-            if (yDeltaIntersectionHitLine == 0) {
-                if (slopeOfCheckLine[1] != 0 && !sRelSet) {
-                    sValue = (midpoint[1] - corners[i].getY()) / slopeOfCheckLine[1];
-                    sRelSet = true;
-                } else if (midpoint[1] != corners[i].getY()) {
-                    //then can't intersect, continue
-                    continue;
-                }
-            } else if (!tRelSet) {
-                if (slopeOfCheckLine[1] != 0) {
-                    tValueRelativeS[0] = (corners[i].getY() - midpoint[1]) / yDeltaIntersectionHitLine;
-                    tValueRelativeS[1] = slopeOfCheckLine[1] / yDeltaIntersectionHitLine;
-                    tRelSet = true;
-                } else {
-                    tValue = (corners[i].getY() - midpoint[1]) / yDeltaIntersectionHitLine;
-                    tSet = true;
-                }
-                setIn = 'y';
-            }
-            if (zDeltaIntersectionHitLine == 0) {
-                if (slopeOfCheckLine[2] != 0 && !sRelSet) {
-                    sValue = (midpoint[2] - corners[i].getZ()) / slopeOfCheckLine[2];
-                    sRelSet = true;
-                } else if (midpoint[2] != corners[i].getZ()) {
-                    //then can't intersect, continue
-                    continue;
-                }
-            } else if (!tRelSet) {
-                if (slopeOfCheckLine[2] != 0) {
-                    tValueRelativeS[0] = (corners[i].getZ() - midpoint[2]) / zDeltaIntersectionHitLine;
-                    tValueRelativeS[1] = slopeOfCheckLine[2] / zDeltaIntersectionHitLine;
-                    tRelSet = true;
-                } else {
-                    tValue = (corners[i].getZ() - midpoint[2]) / zDeltaIntersectionHitLine;
-                    tSet = true;
-                }
-                setIn = 'z';
-            }
-
-            //should be done on the s side
-            //now to actually solve for the one not set
-            //TODO: FAULTY
-            if (tRelSet && setIn != ' ') {
-                double xSplit = xDeltaIntersectionHitLine * tValueRelativeS[1] - slopeOfCheckLine[0];
-                double ySplit = yDeltaIntersectionHitLine * tValueRelativeS[1] - slopeOfCheckLine[1];
-                double zSplit = zDeltaIntersectionHitLine * tValueRelativeS[1] - slopeOfCheckLine[2];
-                //solve for actual
-                if (*//*setIn != 'x' &&*//* xDeltaIntersectionHitLine != 0 && slopeOfCheckLine[0] != 0 && xSplit != 0) {
-                        //sValue = (corners[i].getX() - tValueRelativeS[0] + slopeOfCheckLine[0] * tValueRelativeS[1]) / xDeltaIntersectionHitLine;
-                        sValue = (corners[i].getX() - midpoint[0] - xDeltaIntersectionHitLine * tValueRelativeS[0]) / xSplit;
-                    sRelSet = !(sValue < 0);
-                } else if (*//*setIn != 'y' &&*//* yDeltaIntersectionHitLine != 0 && slopeOfCheckLine[1] != 0 && ySplit != 0) {
-                    //sValue = (corners[i].getY() - tValueRelativeS[0] + slopeOfCheckLine[1] * tValueRelativeS[1]) / yDeltaIntersectionHitLine;
-                    sValue = (corners[i].getY() - midpoint[1] - yDeltaIntersectionHitLine * tValueRelativeS[0]) / ySplit;
-                    sRelSet = !(sValue < 0);
-                } else if (*//*setIn != 'z' &&*//* zDeltaIntersectionHitLine != 0 && slopeOfCheckLine[2] != 0 && zSplit != 0) {
-                    //sValue = (corners[i].getZ() - tValueRelativeS[0] + slopeOfCheckLine[2] * tValueRelativeS[1]) / zDeltaIntersectionHitLine;
-                    sValue = (corners[i].getZ() - midpoint[2] - zDeltaIntersectionHitLine * tValueRelativeS[0]) / zSplit;
-                    sRelSet = !(sValue < 0);
-                }
-            }
-            //set tValue
-            if (!tSet){
-                if (xDeltaIntersectionHitLine != 0) {
-                    tValue = (corners[i].getX() - midpoint[0] + slopeOfCheckLine[0]) / xDeltaIntersectionHitLine;
-                } else if (yDeltaIntersectionHitLine != 0) {
-                    tValue = (corners[i].getY() - midpoint[1] + slopeOfCheckLine[1]) / yDeltaIntersectionHitLine;
-                } else if (zDeltaIntersectionHitLine != 0){
-                    tValue = (corners[i].getZ() - midpoint[2] + slopeOfCheckLine[2]) / zDeltaIntersectionHitLine;
-                }
-            }
-
-            //sValue or tValue?
-            //both, not at same place though, s might be something, and t doesn't have to be the same!
-            Point interSectionPoint = new Point(midpoint[0] + xDeltaIntersectionHitLine * tValue,
-                    midpoint[1] + yDeltaIntersectionHitLine * tValue,
-                    midpoint[2] + zDeltaIntersectionHitLine * tValue);
-            if ((midpoint[0] + xDeltaIntersectionHitLine * tValue
-                    == corners[i].getX() + slopeOfCheckLine[0] * sValue
-                    && midpoint[1] + yDeltaIntersectionHitLine * tValue
-                    == corners[i].getY() + slopeOfCheckLine[1] * sValue
-                    && midpoint[2] + zDeltaIntersectionHitLine * tValue
-                    == corners[i].getZ() + slopeOfCheckLine[2] * sValue)
-                    && isWithinSpaceRange(interSectionPoint, corners[i], corners[index])) {
-                intersectionsWithAreaSides++;
-            }
-        }
-        return intersectionsWithAreaSides == 1;
-    }*/
-
     public static boolean isRayInsideFinitePlane(Side side, double[] camera, double[] frustumCorner)
     {
         double[] planeIntersectionPoint = calculateIntersectionPoint(side, camera, frustumCorner);
@@ -372,97 +233,133 @@ public class PerspectiveMath
             //either I can solve for one immediately, or quickly eliminate
 
             //this can short circuit the equation for the value t
-            if (xHitDelta != 0 && slopeOfCheckLine[0] == 0){
+            if (xHitDelta != 0 && slopeOfCheckLine[0] == 0) {
                 tValue = (corner.getX() - midpoint[0]) / xHitDelta;
                 tQuickSet = true;
-            } else if (yHitDelta != 0 && slopeOfCheckLine[1] == 0){
+            } else if (yHitDelta != 0 && slopeOfCheckLine[1] == 0) {
                 tValue = (corner.getY() - midpoint[1]) / yHitDelta;
                 tQuickSet = true;
-            } else if (zHitDelta != 0 && slopeOfCheckLine[2] == 0){
+            } else if (zHitDelta != 0 && slopeOfCheckLine[2] == 0) {
                 tValue = (corner.getZ() - midpoint[2]) / zHitDelta;
                 tQuickSet = true;
             }
             //this can short circuit the equation for the value of s
-            if (slopeOfCheckLine[0] != 0 && xHitDelta == 0){
-                sValue = (corner.getX() - midpoint[0]) / slopeOfCheckLine[0];
+            if (slopeOfCheckLine[0] != 0 && xHitDelta == 0) {
+                sValue = (midpoint[0] - corner.getX()) / slopeOfCheckLine[0];
                 sQuickSet = true;
-            } else if (slopeOfCheckLine[1] != 0 && yHitDelta == 0){
-                sValue = (corner.getY() - midpoint[1]) / slopeOfCheckLine[1];
+            } else if (slopeOfCheckLine[1] != 0 && yHitDelta == 0) {
+                sValue = (midpoint[1] - corner.getY()) / slopeOfCheckLine[1];
                 sQuickSet = true;
-            } else if (slopeOfCheckLine[2] != 0 && zHitDelta == 0){
-                sValue = (corner.getZ() - midpoint[2]) / slopeOfCheckLine[2];
+            } else if (slopeOfCheckLine[2] != 0 && zHitDelta == 0) {
+                sValue = (midpoint[2] - corner.getZ()) / slopeOfCheckLine[2];
                 sQuickSet = true;
             }
 
             //if any is already set, check and determine
-            if (tQuickSet){
+            if (tQuickSet) {
                 //if both set, done
-                if (!sQuickSet){
+                if (!sQuickSet) {
                     //solve for s
-                    if (xHitDelta != 0 && slopeOfCheckLine[0] != 0){
+                    if (xHitDelta != 0 && slopeOfCheckLine[0] != 0) {
                         sValue = (midpoint[0] - corner.getX() + xHitDelta * tValue) / slopeOfCheckLine[0];
-                    } else if (yHitDelta != 0 && slopeOfCheckLine[1] != 0){
+                    } else if (yHitDelta != 0 && slopeOfCheckLine[1] != 0) {
                         sValue = (midpoint[1] - corner.getY() + yHitDelta * tValue) / slopeOfCheckLine[1];
-                    } else if (zHitDelta != 0 && slopeOfCheckLine[2] != 0){
+                    } else if (zHitDelta != 0 && slopeOfCheckLine[2] != 0) {
                         sValue = (midpoint[2] - corner.getZ() + zHitDelta * tValue) / slopeOfCheckLine[2];
                     }
                 }
                 done = true;
-            } else if (sQuickSet){
+            } else if (sQuickSet) {
                 //solve for t
-                if (xHitDelta != 0 && slopeOfCheckLine[0] != 0){
+                if (xHitDelta != 0 && slopeOfCheckLine[0] != 0) {
                     tValue = (corner.getX() - midpoint[0] + slopeOfCheckLine[0] * sValue) / xHitDelta;
-                } else if (yHitDelta != 0 && slopeOfCheckLine[1] != 0){
+                } else if (yHitDelta != 0 && slopeOfCheckLine[1] != 0) {
                     tValue = (corner.getY() - midpoint[1] + slopeOfCheckLine[1] * sValue) / yHitDelta;
-                } else if (zHitDelta != 0 && slopeOfCheckLine[2] != 0){
+                } else if (zHitDelta != 0 && slopeOfCheckLine[2] != 0) {
                     tValue = (corner.getZ() - midpoint[2] + slopeOfCheckLine[2] * sValue) / zHitDelta;
                 }
                 done = true;
             }
 
-            //[0] is constant, and [1] is slope, IMPORTANT is [0] - [1] in actuality
+            //[0] is constant, and [1] is slope, IMPORTANT is [0] + [1] in actuality
             double[] tRelS = new double[2];
             double[] sRelT = new double[2];
             int equationSolved = 0;
 
             //here I should know that there is no equation that hasn't got a valid slope on both sides, or they got 0 in slope gradient on both
-            if (!done){
-                if (xHitDelta != 0 && slopeOfCheckLine[0] != 0){
+            if (!done) {
+                if (xHitDelta != 0 && slopeOfCheckLine[0] != 0) {
                     tRelS[0] = (corner.getX() - midpoint[0]) / xHitDelta;
                     tRelS[1] = slopeOfCheckLine[0] / xHitDelta;
-                } else if (yHitDelta != 0 && slopeOfCheckLine[1] != 0){
+                    equationSolved = 0;
+                } else if (yHitDelta != 0 && slopeOfCheckLine[1] != 0) {
                     tRelS[0] = (corner.getY() - midpoint[1]) / yHitDelta;
                     tRelS[1] = slopeOfCheckLine[1] / yHitDelta;
-                } else if (zHitDelta != 0 && slopeOfCheckLine[2] != 0){
+                    equationSolved = 1;
+                } else if (zHitDelta != 0 && slopeOfCheckLine[2] != 0) {
                     tRelS[0] = (corner.getZ() - midpoint[2]) / zHitDelta;
                     tRelS[1] = slopeOfCheckLine[2] / zHitDelta;
+                    equationSolved = 2;
                 }
                 //now to solve for s value
                 //using chooseIndex to avoid redoing the same equation twice, would not work
-                switch (chooseIndex(3, equationSolved + 1)){
+                switch (chooseIndex(3, equationSolved + 1)) {
                     case 0:
-                        sValue =
-                        break;
+                        if (slopeOfCheckLine[0] != 0 && xHitDelta != 0) {
+                            sValue = (corner.getX() - midpoint[0] - xHitDelta * tRelS[0]) / (xHitDelta * tRelS[1] - slopeOfCheckLine[0]);
+                            equationSolved = 0;
+                            break;
+                        }
                     case 1:
-
-                        break;
+                        if (slopeOfCheckLine[1] != 0 && yHitDelta != 0) {
+                            sValue = (corner.getY() - midpoint[1] - yHitDelta * tRelS[0]) / (yHitDelta * tRelS[1] - slopeOfCheckLine[1]);
+                            equationSolved = 1;
+                            break;
+                        }
                     case 2:
-
-                        break;
+                        if (slopeOfCheckLine[2] != 0 && zHitDelta != 0) {
+                            sValue = (corner.getZ() - midpoint[2] - zHitDelta * tRelS[0]) / (zHitDelta * tRelS[1] - slopeOfCheckLine[2]);
+                            equationSolved = 2;
+                            break;
+                        }
                 }
-
                 //now to solve for t value
+                //TODO make sure that it's no copy-paste errors
+                switch (chooseIndex(3, equationSolved + 1)) {
+                    case 0:
+                        if (slopeOfCheckLine[0] != 0 && xHitDelta != 0) {
+                            tValue = (corner.getX() - midpoint[0] + slopeOfCheckLine[0] * sValue) / xHitDelta;
+                            equationSolved = 0;
+                            break;
+                        }
+                    case 1:
+                        if (slopeOfCheckLine[1] != 0 && yHitDelta != 0) {
+                            tValue = (corner.getY() - midpoint[1] + slopeOfCheckLine[1] * sValue) / yHitDelta;
+                            equationSolved = 1;
+                            break;
+                        }
+                    case 2:
+                        if (slopeOfCheckLine[2] != 0 && zHitDelta != 0) {
+                            tValue = (corner.getZ() - midpoint[2] + slopeOfCheckLine[2] * sValue) / zHitDelta;
+                            equationSolved = 2;
+                            break;
+                        }
+                }
             }
-
-
-
-
 
             //check if actually valid answers, if so, add it as a valid intersection
             //space range, universal t- and s- values
-
+            Point intersectionPoint = new Point(midpoint[0] + xHitDelta * tValue, midpoint[1] + yHitDelta * tValue, midpoint[2] + zHitDelta * tValue);
+            if (!isWithinSpaceRange(intersectionPoint, new Point(midpoint), new Point(planeIntersectionPoint))
+                    && isWithinSpaceRange(intersectionPoint, corner, corners[chooseIndex(corners.length, i + 1)])
+                    && intersectionPoint.getX() == corner.getX() + slopeOfCheckLine[0] * sValue
+                    && intersectionPoint.getY() == corner.getY() + slopeOfCheckLine[1] * sValue
+                    && intersectionPoint.getZ() == corner.getZ() + slopeOfCheckLine[2] * sValue) {
+                intersectionsWithAreaSides++;
+            }
         }
-        return false;
+        //valid if exiting, or exiting and then penetrating the object again for more complex polygons
+        return intersectionsWithAreaSides == 1 || intersectionsWithAreaSides == 3;
     }
 
 

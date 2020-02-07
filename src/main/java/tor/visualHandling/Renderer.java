@@ -2,11 +2,14 @@ package tor.visualHandling;
 
 import tor.Camera;
 import tor.Manager;
+import tor.mathHandling.StandardMath;
 import tor.shapeHandling.Shape;
 import tor.shapeHandling.Side;
 import tor.shapeHandling.Point;
 
 import static tor.visualHandling.PerspectiveMath.*;
+import static tor.mathHandling.StandardMath.*;
+
 
 import javax.swing.*;
 import java.awt.*;
@@ -99,7 +102,7 @@ public class Renderer extends JPanel
         if (!containedBy.isEmpty()) {
             secondRayPosition = createSecondRayPosition(i, j, manager);
             for (Frame frame : containedBy) {
-                double newDistance = calculateSpaceDistance(manager.getCamera().getPosition(), calculateIntersectionPoint(frame.side, manager.getCamera().getPosition(), secondRayPosition));
+                double newDistance = StandardMath.calculateSpaceDistance(manager.getCamera().getPosition(), calculateIntersectionPoint(frame.side, manager.getCamera().getPosition(), secondRayPosition));
 
                 if (newDistance < distance) {
                     distance = newDistance;
@@ -150,7 +153,7 @@ public class Renderer extends JPanel
                         if (!lastOutside) {
                             for (Side frustumSide : frustumSides) {
                                 Point intersection = new Point(calculateIntersectionPoint(frustumSide, point.getPosition(), lastPoint.getPosition()));
-                                if (isWithinSpaceRange(intersection, point, lastPoint)) {
+                                if (StandardMath.isWithinSpaceRange(intersection, point, lastPoint)) {
                                     onLineBack.add(intersection);
                                 }
                             }
@@ -183,13 +186,14 @@ public class Renderer extends JPanel
                         //now check if a ray traced from a corner intersects the side that is formed by the active, former, and next points, if so add it, then sort by distance
                         for (Point corner: frustumCorners){
                             //but! all corners will connect at some point, so which ones are valid?
-                            if (isRayInsideFinitePlane(side, manager.getCamera().getPosition(), corner.getPosition())){
+                            if (isRayInsideFinitePlane(new Side(lastPoint, point, nextPoint), manager.getCamera().getPosition(), corner.getPosition())){
                                 validIntersections.add(corner);
                             }
                         }
+                        //TODO: does not work, as make relative says the point is off screen, but the frustum is wider than what I can see, putting these points in a limbo?
                         for (Side frustumSide : frustumSides) {
                             Point intersection = new Point(calculateIntersectionPoint(frustumSide, point.getPosition(), nextPoint.getPosition()));
-                            if (isWithinSpaceRange(intersection, point, nextPoint)) {
+                            if (StandardMath.isWithinSpaceRange(intersection, point, nextPoint)) {
                                 onLineForward.add(intersection);
                             }
                         }
@@ -254,7 +258,7 @@ public class Renderer extends JPanel
             double currentFurthestDistance = 0;
             Point currentFurthestPoint = null;
             for (Point point : intersectionPoints) {
-                double distance = calculateSpaceDistance(point.getPosition(), activePoint.getPosition());
+                double distance = StandardMath.calculateSpaceDistance(point.getPosition(), activePoint.getPosition());
                 if (distance > currentFurthestDistance) {
                     currentFurthestPoint = point;
                     currentFurthestDistance = distance;
@@ -278,7 +282,7 @@ public class Renderer extends JPanel
                 if (point == null){
                     return sorted;
                 }
-                double distance = calculateSpaceDistance(point.getPosition(), activePoint.getPosition());
+                double distance = StandardMath.calculateSpaceDistance(point.getPosition(), activePoint.getPosition());
                 if (distance < currentClosestDistance) {
                     currentClosestPoint = point;
                     currentClosestDistance = distance;

@@ -1,8 +1,10 @@
-package tor;
+package tor.mathTests;
 
 import static tor.visualHandling.PerspectiveMath.*;
 
 import org.junit.Test;
+import tor.Camera;
+import tor.mathHandling.StandardMath;
 import tor.shapeHandling.Point;
 import tor.shapeHandling.Side;
 
@@ -13,7 +15,7 @@ import static org.junit.Assert.*;
 public class PerspectiveMathTest
 {
     @Test
-    public void shouldAnswerWithTrue()
+    public void frustumCornerCheck()
     {
         Camera camera = new Camera(new Point(-300, 200, 200));
         //Top left
@@ -34,6 +36,7 @@ public class PerspectiveMathTest
         assertEquals(800, makeRelative(pos, camera)[0], 1);
         assertEquals(500, makeRelative(pos, camera)[1], 1);
     }
+
 
     //------------------------one step authenticated tests
 

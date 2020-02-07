@@ -8,6 +8,7 @@ TODO's:
   * and add depth of field
 * make equations object to be manipulated and sent around, with related methods in the same class, very helpful for future use
 * make it universal to use either Points OR double[] for positions, too mixed right now
+* clean up methods so they chain and don't repeat themselves, for example makeRelative, several methods, but internally they all convert the in data and call one common makeRelative method
 
 WANTED TODO's:
 

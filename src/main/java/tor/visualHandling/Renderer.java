@@ -116,6 +116,8 @@ public class Renderer extends JPanel
     private ArrayList<Frame> calculateFrames()
     {
         //TODO: construct frustum sides AS THE CAMERA IS SET for the frame
+        //TODO: look over logical flow, seem to be one or more messing things up, flips and twists should not be a thing!!
+        //TODO: break out concise code into their own methods for easy reading and TESTING
         Point[] frustumCorners = calculateFrustumCorners();
         Side[] frustumSides = calculateFrustumSides(frustumCorners);
         ArrayList<Frame> frames = new ArrayList<>();

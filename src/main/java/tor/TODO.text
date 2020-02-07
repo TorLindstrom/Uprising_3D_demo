@@ -1,14 +1,21 @@
 
+UPRISING DOCUMENTATION: TODO's
 
 
 TODO's:
 
+* MAKE MORE TESTS
+* break out code to be their own methods at points
 * fix makeRelative
   * FOV modifier
   * and add depth of field
 * make equations object to be manipulated and sent around, with related methods in the same class, very helpful for future use
 * make it universal to use either Points OR double[] for positions, too mixed right now
+  * same with angles, radians, or angles
 * clean up methods so they chain and don't repeat themselves, for example makeRelative, several methods, but internally they all convert the in data and call one common makeRelative method
+* look over the setHorizon method, does not seem to work properly
+* clean up equations and method flows trying to save some processing power
+* look over access modifiers and encapsulation, also relationships between classes
 
 WANTED TODO's:
 
@@ -20,3 +27,4 @@ WANTED TODO's:
   * and animated textures, such as snowfall on a plane, or water and fire effects
 * camera filters and UIs
 * add animations for object meshes, spinning and morphing for example, also butterflies
+* add rollAngle so it can work, would be fun and cool, also necessary for flying perspective

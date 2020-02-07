@@ -12,23 +12,18 @@ import static tor.mathHandling.StandardMath.*;
 
 public class PerspectiveMath
 {
-
+    //main dog makeRelative method, is boss
     public static int[] makeRelative(double x, double y, double z, Camera camera)
     {
-        //Damn it all, need depth of field anyways
-        //TODO: implement depth of field from old makeRelative method, needed for it to make sense to hoomans, and to straighten curves that automatically popup
-        //convert the equation from going by circular angles to cartesian angles
         double relativeX = x - camera.getX();
         double relativeY = y - camera.getY();
         double relativeZ = z - camera.getZ();
         int[] screenPos = new int[2];
 
-        //relative depth goes here
-
         double xyDistance = calculatePaneDistance(relativeX, relativeY);
         double horizontalPlaneAngle = (Math.atan2(relativeY, relativeX) * (180 / PI)) - camera.getHorizontalAngle();
-        double relativeXYDepth = cos(horizontalPlaneAngle * PI / 180) * xyDistance;
-        double verticalPlaneAngle = Math.atan(relativeZ / relativeXYDepth) - camera.getVerticalAngle() * (PI / 180);
+        double relativeXYDepth = cos(horizontalPlaneAngle * (PI / 180)) * xyDistance;
+        double verticalPlaneAngle = Math.atan2(relativeZ, relativeXYDepth) * (180 / PI) - camera.getVerticalAngle();
 
         //difference being relativeXYDepth and xyDistance
         //double verticalPlaneAngle = (Math.atan(relativeZ / calculatePaneDistance(relativeX, relativeY)) * (180 / PI)) - camera.getVerticalAngle();
@@ -144,7 +139,10 @@ public class PerspectiveMath
 
     public static int setHorizonLevel(Camera camera)
     {
-        double angleToHorizon = -((Math.atan(camera.getPosition()[2] / Double.MAX_VALUE)) * (180 / PI)) - camera.getVerticalAngle();
+        //TODO: should only be called after movement, or even only after vertical movement, either moving up-down, or angling up-down
+        //should be right in front when the camera is plain
+        double angleToHorizon = -camera.getVerticalAngle();
+        //double angleToHorizon = -((Math.atan(camera.getPosition()[2] / Double.MAX_VALUE)) * (180 / PI)) - camera.getVerticalAngle();
         return (int) (tan((camera.getVerticalAngle() * PI / 180) / 4) * height / ((camera.getVerticalFOV() / 2) / 180)) + height / 2;
         //return (int) (height - (camera.getVerticalFOV() / 2 + angleToHorizon) / camera.getVerticalFOV() * height);
     }

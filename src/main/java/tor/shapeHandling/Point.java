@@ -12,6 +12,13 @@ public class Point
         this.z = z;
     }
 
+    public Point(double[] pos){
+        position = pos;
+        this.x = pos[0];
+        this.y = pos[1];
+        this.z = pos[2];
+    }
+
     public Point(Point point){
         position = point.getPosition();
         x = point.getX();

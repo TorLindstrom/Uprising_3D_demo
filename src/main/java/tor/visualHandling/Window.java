@@ -6,7 +6,7 @@ import javax.swing.*;
 
 public class Window extends JFrame
 {
-    public static final int width = 600, height = 400;
+    public static final int width = 800, height = 500;
 
     public Window(Manager manager){
         Renderer renderer = new Renderer(manager);

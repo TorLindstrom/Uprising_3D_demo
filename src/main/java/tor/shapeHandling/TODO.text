@@ -1,0 +1,21 @@
+
+
+
+TODO's:
+
+* fix makeRelative
+  * FOV modifier
+  * and add depth of field
+* make equations object to be manipulated and sent around, with related methods in the same class, very helpful for future use
+* make it universal to use either Points OR double[] for positions, too mixed right now
+
+WANTED TODO's:
+
+* add shadows
+* add movement
+  * and add interactions and weapons
+* add an editor
+* add textures
+  * and animated textures, such as snowfall on a plane, or water and fire effects
+* camera filters and UIs
+* add animations for object meshes, spinning and morphing for example, also butterflies

@@ -5,9 +5,10 @@ import tor.shapeHandling.Point;
 public class Camera extends Point
 {
     private double horizontalAngle = 0, verticalAngle = 0, rollAngle = 0;
-    private double horizontalFOV = 120, verticalFOV = 90;
+    private double horizontalFOV = 90, verticalFOV = 65;
 
-    public Camera(Point point){
+    public Camera(Point point)
+    {
         super(point);
     }
 
@@ -19,6 +20,7 @@ public class Camera extends Point
     public void setHorizontalAngle(double horizontalAngle)
     {
         this.horizontalAngle = horizontalAngle;
+        this.horizontalAngle %= 360;
     }
 
     public double getVerticalAngle()
@@ -29,6 +31,7 @@ public class Camera extends Point
     public void setVerticalAngle(double verticalAngle)
     {
         this.verticalAngle = verticalAngle;
+        this.verticalAngle %= 360;
     }
 
     public double getRollAngle()
@@ -39,6 +42,7 @@ public class Camera extends Point
     public void setRollAngle(double rollAngle)
     {
         this.rollAngle = rollAngle;
+        this.horizontalAngle %= 360;
     }
 
     public double getHorizontalFOV()

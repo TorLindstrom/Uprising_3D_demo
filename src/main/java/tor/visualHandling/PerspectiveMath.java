@@ -12,7 +12,7 @@ import static tor.mathHandling.StandardMath.*;
 
 public class PerspectiveMath
 {
-    //main dog makeRelative method, is boss
+    //main-dog makeRelative method, is boss
     public static int[] makeRelative(double x, double y, double z, Camera camera)
     {
         double relativeX = x - camera.getX();
@@ -20,18 +20,28 @@ public class PerspectiveMath
         double relativeZ = z - camera.getZ();
         int[] screenPos = new int[2];
 
+        //TODO: need to count with zDepth somehow, incorrect angles from tilting up-down
+
         double xyDistance = calculatePaneDistance(relativeX, relativeY);
-        double horizontalPlaneAngle = (Math.atan2(relativeY, relativeX) * (180 / PI)) - camera.getHorizontalAngle();
-        double relativeXYDepth = cos(horizontalPlaneAngle * (PI / 180)) * xyDistance;
-        double verticalPlaneAngle = Math.atan2(relativeZ, relativeXYDepth) * (180 / PI) - camera.getVerticalAngle();
+        double rawHorizontalPlaneAngle = (atan2(relativeY, relativeX) * (180 / PI)) - camera.getHorizontalAngle();
+        double relativeXYDepth = cos(rawHorizontalPlaneAngle * (PI / 180)) * xyDistance;
+        double zDepthDistance = calculatePaneDistance(relativeZ, relativeXYDepth);
+        double verticalPlaneAngle = atan(relativeZ / relativeXYDepth) * (180 / PI) - camera.getVerticalAngle();
+        double horizontalPlaneAngle = atan((sin(rawHorizontalPlaneAngle * PI / 180) * relativeXYDepth) / (calculatePaneDistance(relativeZ, relativeXYDepth) * cos(verticalPlaneAngle * PI / 180))) * 180 / PI;
+
+        //zDepth? yes, zDepth.
+
+        double relativeDepth = cos(atan2(relativeZ, relativeXYDepth) + camera.getVerticalAngle() * PI / 180) * zDepthDistance;
+        //using relativeXYDepth to counteract horizontal positioning
+
 
         //difference being relativeXYDepth and xyDistance
         //double verticalPlaneAngle = (Math.atan(relativeZ / calculatePaneDistance(relativeX, relativeY)) * (180 / PI)) - camera.getVerticalAngle();
-        //something wrong with the FOV alter, too big zoom effect, frustum corners are not visible, big issue
+
+        //TODO: move the FOV division to the camera class, and save it there, changed when either screen size or FOV changes
         screenPos[0] = (int) (-tan(((horizontalPlaneAngle * PI / 180) / 4) / ((camera.getHorizontalFOV() / 2) / 180)) * width / 2 + width / 2);
         screenPos[1] = (int) (-tan(((verticalPlaneAngle * PI / 180) / 4) / ((camera.getVerticalFOV() / 2) / 180)) * height / 2 + height / 2);
         return screenPos;
-        //TODO: vertical angle near edges need to be determined by a viewing frustum for accuracy, not done here
     }
 
     public static int[] makeRelative(Point pos, Camera camera)

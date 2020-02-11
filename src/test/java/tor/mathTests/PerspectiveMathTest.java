@@ -18,23 +18,38 @@ public class PerspectiveMathTest
     public void frustumCornerCheck()
     {
         Camera camera = new Camera(new Point(-300, 200, 200));
+        //center
+        Point center = new Point(-200, 200, 200);
+        assertEquals(400, makeRelative(center, camera)[0], 1);
+        assertEquals(250, makeRelative(center, camera)[1], 1);
         //Top left
-        double[] rawPos = new double[]{-229.289, 270.711, 253.729};
+        double[] rawPos = new double[]{-215.6605, 284.3395, 253.729};
         Point pos = new Point(rawPos);
         assertEquals(0, makeRelative(pos, camera)[0], 1);
         assertEquals(0, makeRelative(pos, camera)[1], 1);
         //Top right
-        pos = new Point(new double[]{-229.289, 129.289, 253.729});
+        pos = new Point(new double[]{-215.6605, 115.6605, 253.729});
         assertEquals(800, makeRelative(pos, camera)[0], 1);
         assertEquals(0, makeRelative(pos, camera)[1], 1);
         //Bot left
-        pos = new Point(new double[]{-229.289, 270.711, 146.271});
+        pos = new Point(new double[]{-215.6605, 284.3395, 146.271});
         assertEquals(0, makeRelative(pos, camera)[0], 1);
         assertEquals(500, makeRelative(pos, camera)[1], 1);
         //Bot right
-        pos = new Point(new double[]{-229.289, 129.289, 146.271});
+        pos = new Point(new double[]{-215.6605, 115.6605, 146.271});
         assertEquals(800, makeRelative(pos, camera)[0], 1);
         assertEquals(500, makeRelative(pos, camera)[1], 1);
+    }
+
+    @Test
+    public void makeRelativeDebugTestCheck()
+    {
+        Camera camera = new Camera(new Point(-300, 200, 200));
+        camera.setHorizontalAngle(camera.getHorizontalAngle() + 5);
+        //center
+        Point center = new Point(-200, 200, 200);
+        assertEquals(400, makeRelative(center, camera)[0], 1);
+        assertEquals(250, makeRelative(center, camera)[1], 1);
     }
 
 

@@ -33,6 +33,8 @@ public class Manager
                 new Side(Color.LIGHT_GRAY, new Point(2000, 900, 0), new Point(-1000, 900, 0), new Point(-1000, 900, 500), new Point(2000, 900, 500))));
         scene.addShape(new Shape(
                 new Side(Color.BLUE, new Point(2000, -500, 1000), new Point(-500, -500, 1000), new Point(-500, 500, 1000), new Point(2000, 500, 1000))));
+        scene.addShape(new Shape(
+                new Side(Color.CYAN, new Point(1000, -200, 1000), new Point(1000, 200, 1000), new Point(1000, 200, 0), new Point(1000, -200, 0))));
 
         window.repaint();
         movement();

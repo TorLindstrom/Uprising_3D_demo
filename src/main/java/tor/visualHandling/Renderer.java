@@ -314,19 +314,22 @@ public class Renderer extends JPanel
     public static Point[] calculateFrustumCorners()
     {
         //TODO: Move this method to be called when the camera has moved, only! saves processing power
+        //TODO: mangled angles! the result gives different angles than is put in
+        //TODO: would  not work properly while panning up-down, no relative depth, or would it work, it works by absolute values after all, but absolute values don't work wgenb oabnbubf
         Camera camera = manager.getCamera();
         double horizontalAngle = camera.getHorizontalAngle() + camera.getHorizontalFOV() / 2;
         double verticalAngle = camera.getVerticalAngle() + camera.getVerticalFOV() / 2;
-        double topPos = 100 * sin(verticalAngle * PI / 180) + camera.getZ();
+        double topPos = 100 * sin(verticalAngle * (PI / 180)) + camera.getZ();
         verticalAngle -= camera.getVerticalFOV();
         double botPos = 100 * sin(verticalAngle * PI / 180) + camera.getZ();
-        double leftYPos = 100 * sin(horizontalAngle * PI / 180) + camera.getY();
-        double leftXPos = 100 * cos(horizontalAngle * PI / 180) + camera.getX();
+        double leftYPos = 119.274 * sin(horizontalAngle * PI / 180) + camera.getY();
+        //should be multiplied by a greater value to compensate for....something (circular angles as opposed to cartesian angles?),
+        //that keeps the horizontal angle, but makes the angle to top and bot pos functional and correct
+        double leftXPos = 119.274 * cos(horizontalAngle * PI / 180) + camera.getX();
         horizontalAngle -= camera.getHorizontalFOV();
-        double rightYPos = 100 * sin(horizontalAngle * PI / 180) + camera.getY();
-        double rightXPos = 100 * cos(horizontalAngle * PI / 180) + camera.getX();
+        double rightYPos = 119.274 * sin(horizontalAngle * PI / 180) + camera.getY();
+        double rightXPos = 119.274 * cos(horizontalAngle * PI / 180) + camera.getX();
 
-        //TODO: check if correctly implemented and calculated
         //topleft, topright, botleft, botright
         return new Point[]{new Point(leftXPos, leftYPos, topPos), new Point(rightXPos, rightYPos, topPos), new Point(leftXPos, leftYPos, botPos), new Point(rightXPos, rightYPos, botPos)};
     }

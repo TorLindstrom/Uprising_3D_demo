@@ -53,9 +53,9 @@ public class StandardMath
         return sqrt(pow(pos1[0] - pos2[0], 2) + pow(pos1[1] - pos2[1], 2) + pow(pos1[2] - pos2[2], 2));
     }
 
-    public static boolean isWithinRange(double value, double lower, double upper)
+    public static boolean isWithinRange(double value, double border1, double border2)
     {
-        return value <= upper && value >= lower;
+        return value <= max(border2, border1) && value >= min(border1, border2);
     }
 
     public static boolean isWithinSpaceRange(Point point, Point borderingTop, Point borderingBot)

@@ -20,27 +20,23 @@ public class PerspectiveMath
         double relativeZ = z - camera.getZ();
         int[] screenPos = new int[2];
 
-        //TODO: need to count with zDepth somehow, incorrect angles from tilting up-down
-
         double xyDistance = calculatePaneDistance(relativeX, relativeY);
         double rawHorizontalPlaneAngle = (atan2(relativeY, relativeX) * (180 / PI)) - camera.getHorizontalAngle();
         double relativeXYDepth = cos(rawHorizontalPlaneAngle * (PI / 180)) * xyDistance;
-        double zDepthDistance = calculatePaneDistance(relativeZ, relativeXYDepth);
         double verticalPlaneAngle = atan(relativeZ / relativeXYDepth) * (180 / PI) - camera.getVerticalAngle();
         double horizontalPlaneAngle = atan((sin(rawHorizontalPlaneAngle * PI / 180) * relativeXYDepth) / (calculatePaneDistance(relativeZ, relativeXYDepth) * cos(verticalPlaneAngle * PI / 180))) * 180 / PI;
 
-        //zDepth? yes, zDepth.
-
-        double relativeDepth = cos(atan2(relativeZ, relativeXYDepth) + camera.getVerticalAngle() * PI / 180) * zDepthDistance;
-        //using relativeXYDepth to counteract horizontal positioning
-
-
-        //difference being relativeXYDepth and xyDistance
-        //double verticalPlaneAngle = (Math.atan(relativeZ / calculatePaneDistance(relativeX, relativeY)) * (180 / PI)) - camera.getVerticalAngle();
-
         //TODO: move the FOV division to the camera class, and save it there, changed when either screen size or FOV changes
-        screenPos[0] = (int) (-tan(((horizontalPlaneAngle * PI / 180) / 4) / ((camera.getHorizontalFOV() / 2) / 180)) * width / 2 + width / 2);
-        screenPos[1] = (int) (-tan(((verticalPlaneAngle * PI / 180) / 4) / ((camera.getVerticalFOV() / 2) / 180)) * height / 2 + height / 2);
+        //I don't know if this actually is fully functional, it is a good equation though, nicely calibrated
+        //as soon as it is off screen, then it doesn't matter, as I then should go by absolute math with frustum intersections and corner checks
+
+        if (horizontalPlaneAngle > camera.getVerticalFOV() / 2 || horizontalPlaneAngle < camera.getVerticalFOV() / -2){
+            screenPos[0] = -1;
+            screenPos[1] = -1;
+        } else {
+            screenPos[0] = (int) (-tan(((horizontalPlaneAngle * PI / 180) / 4) / ((camera.getHorizontalFOV() / 2) / 180)) * width / 2 + width / 2);
+            screenPos[1] = (int) (-tan(((verticalPlaneAngle * PI / 180) / 4) / ((camera.getVerticalFOV() / 2) / 180)) * height / 2 + height / 2);
+        }
         return screenPos;
     }
 
@@ -58,94 +54,10 @@ public class PerspectiveMath
         return screenPos;*/
     }
 
-    /*public static int[] makeRelative(double x, double y, double z, Camera camera)
-    {
-        double relativeX = x - camera.getX();
-        double relativeY = y - camera.getY();
-        double relativeZ = z - camera.getZ();
-        int[] screenPos = new int[2];
-        double xyDistance = calculatePaneDistance(relativeX, relativeY);
-        double horizontalPlaneAngle = Math.atan(relativeY / relativeX) - camera.getHorizontalAngle() * (PI / 180);
-        double relativeXYDepth = Math.cos(horizontalPlaneAngle) * xyDistance;
-        double verticalPlaneAngle = Math.atan(relativeZ / relativeXYDepth) - camera.getVerticalAngle() * (PI / 180);
-        double zDepthDistance = calculatePaneDistance(relativeZ, relativeXYDepth);
-
-        double relativeDepth = cos(verticalPlaneAngle) * zDepthDistance;
-
-        double halfWidthAtDepth = tan(camera.getHorizontalFOV() / 2 * (PI / 180)) * relativeDepth;
-        double halfWidthFromLeft = halfWidthAtDepth + sin(horizontalPlaneAngle) * xyDistance; //width deep from left
-        double percentageFromTheLeft = halfWidthFromLeft / (halfWidthAtDepth * 2);
-
-        double halfHeightAtDepth = tan(camera.getVerticalFOV() / 2 * (PI / 180)) * relativeDepth;
-        double halfHeightFromUp = halfHeightAtDepth - tan(verticalPlaneAngle) * relativeDepth;
-        double percentageFromUp = halfHeightFromUp / (halfHeightAtDepth * 2);
-
-        screenPos[0] = (int) ((width * percentageFromTheLeft) + 0.5);
-        screenPos[1] = (int) ((height * percentageFromUp) + 0.5);
-        return screenPos;
-    }*/
-
     public static int[] makeRelative(double[] pos, Camera camera)
     {
-        double relativeX = pos[0] - camera.getX();
-        double relativeY = pos[1] - camera.getY();
-        double relativeZ = pos[2] - camera.getZ();
-        int[] screenPos = new int[2];
-        double xyDistance = calculatePaneDistance(relativeX, relativeY);
-        double horizontalPlaneAngle = Math.atan(relativeY / relativeX) - camera.getHorizontalAngle() * (PI / 180);
-        double relativeXYDepth = Math.cos(horizontalPlaneAngle) * xyDistance;
-        double verticalPlaneAngle = Math.atan(relativeZ / relativeXYDepth) - camera.getVerticalAngle() * (PI / 180);
-        double zDepthDistance = calculatePaneDistance(relativeZ, relativeXYDepth);
-
-        double relativeDepth = cos(verticalPlaneAngle) * zDepthDistance;
-
-        double halfWidthAtDepth = tan(camera.getHorizontalFOV() / 2 * (PI / 180)) * relativeDepth;
-        double halfWidthFromLeft = halfWidthAtDepth + sin(horizontalPlaneAngle) * xyDistance; //width deep from left
-        double percentageFromTheLeft = halfWidthFromLeft / (halfWidthAtDepth * 2);
-
-        double halfHeightAtDepth = tan(camera.getVerticalFOV() / 2 * (PI / 180)) * relativeDepth;
-        double halfHeightFromUp = halfHeightAtDepth - tan(verticalPlaneAngle) * relativeDepth;
-        double percentageFromUp = halfHeightFromUp / (halfHeightAtDepth * 2);
-
-        screenPos[0] = (int) ((width * percentageFromTheLeft) + 0.5);
-        screenPos[1] = (int) ((height * percentageFromUp) + 0.5);
-        return screenPos;
+        return makeRelative(pos[0], pos[1], pos[2], camera);
     }
-
-    /*public static int[] makeRelative(Point pos, Camera camera)
-    {
-        double relativeX = pos.getX() - camera.getX();
-        double relativeY = pos.getY() - camera.getY();
-        double relativeZ = pos.getZ() - camera.getZ();
-        int[] screenPos = new int[2];
-        double xyDistance = calculatePaneDistance(relativeX, relativeY);
-
-        double standardHorizontalAngle = acos(relativeX / xyDistance);
-        if (isNegative(relativeY)) {
-            standardHorizontalAngle *= -1;
-        }
-
-        double horizontalPlaneAngle = standardHorizontalAngle + camera.getHorizontalAngle() * PI / 180;
-
-        double relativeXYDepth = Math.cos(horizontalPlaneAngle) * xyDistance;
-        double verticalPlaneAngle = Math.atan(relativeZ / relativeXYDepth) - camera.getVerticalAngle() * (PI / 180);
-        double zDepthDistance = calculatePaneDistance(relativeZ, relativeXYDepth);
-
-        //TODO: is this not dependent on the point being in front of the camera?
-        double relativeDepth = cos(verticalPlaneAngle) * zDepthDistance;
-
-        double halfWidthAtDepth = tan(camera.getHorizontalFOV() / 2 * (PI / 180)) * relativeDepth;
-        double halfWidthFromLeft = halfWidthAtDepth + sin(horizontalPlaneAngle) * calculateSpaceDistance(relativeX, relativeY, relativeZ) *//*xyDistance*//*; //width deep from left
-        double percentageFromTheLeft = halfWidthFromLeft / (halfWidthAtDepth * 2);
-
-        double halfHeightAtDepth = tan(camera.getVerticalFOV() / 2 * (PI / 180)) * relativeDepth;
-        double halfHeightFromUp = halfHeightAtDepth - tan(verticalPlaneAngle) * relativeDepth;
-        double percentageFromUp = halfHeightFromUp / (halfHeightAtDepth * 2);
-
-        screenPos[0] = (int) ((width * percentageFromTheLeft) + 0.5);
-        screenPos[1] = (int) ((height * percentageFromUp) + 0.5);
-        return screenPos;
-    }*/
 
     public static int setHorizonLevel(Camera camera)
     {
@@ -223,7 +135,6 @@ public class PerspectiveMath
                 sValue = (midpoint[2] - corner.getZ()) / slopeOfCheckLine[2];
                 sQuickSet = true;
             }
-
             //if any is already set, check and determine
             if (tQuickSet) {
                 //if both set, done
@@ -249,7 +160,6 @@ public class PerspectiveMath
                 }
                 done = true;
             }
-
             //[0] is constant, and [1] is slope, IMPORTANT is [0] + [1] in actuality
             double[] tRelS = new double[2];
             double[] sRelT = new double[2];

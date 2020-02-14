@@ -5,13 +5,14 @@ UPRISING DOCUMENTATION: TODO's
 TODO's:
 
 * MAKE MORE TESTS
-* break out code to be their own methods at points
+* break out code to be their own methods
 * fix makeRelative
   * FOV modifier, should be perfectly good math at this point
 * make equations objects to be manipulated and sent around, with related methods in the same class, very helpful for future use
 * make it universal to use either Points OR double[] for positions, too mixed right now
   * same with angles, radians, or angles
 * clean up methods so they chain and don't repeat themselves, for example makeRelative, several methods, but internally they all convert the in data and call one common makeRelative method
+  * or I change every call to call same, and ditch the duplicates, what is wanted?
 * look over the setHorizon method, does not seem to work properly
 * clean up equations and method flows trying to save some processing power
 * look over access modifiers and encapsulation, also relationships between classes

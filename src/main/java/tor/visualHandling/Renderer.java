@@ -292,8 +292,7 @@ public class Renderer extends JPanel
     public static Point[] calculateFrustumCorners()
     {
         //TODO: Move this method to be called when the camera has moved, only! saves processing power
-        //TODO: mangled angles! the result gives different angles than is put in
-        //TODO: would  not work properly while panning up-down, no relative depth, or would it work
+        //TODO: make it super dang simple with "cross" angles instead of several "straight" angles for xy positions
         Camera camera = manager.getCamera();
 
         double depth = cos(camera.getVerticalFOV() / 2 * PI / 180) * 100;

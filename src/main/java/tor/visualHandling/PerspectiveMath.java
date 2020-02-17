@@ -16,6 +16,7 @@ public class PerspectiveMath
     public static int[] makeRelative(double x, double y, double z, Camera camera)
     {
         //TODO: caching the angle values, reuse if the next point have the same values, then can just take the saved data and save a lot of processing power
+        //make that save the most common angles? and the least common get ditched, saves memory?
         double relativeX = x - camera.getX();
         double relativeY = y - camera.getY();
         double relativeZ = z - camera.getZ();
@@ -24,24 +25,21 @@ public class PerspectiveMath
         double xyDistance = calculatePaneDistance(relativeX, relativeY);
         double rawHorizontalPlaneAngle = (atan2(relativeY, relativeX) * (180 / PI)) - camera.getHorizontalAngle();
         double relativeXYDepth = cos(rawHorizontalPlaneAngle * (PI / 180)) * xyDistance;
-        double verticalPlaneAngle = atan(relativeZ / relativeXYDepth) * (180 / PI) - camera.getVerticalAngle();
+        double verticalPlaneAngle = atan2(relativeZ, relativeXYDepth) * (180 / PI) - camera.getVerticalAngle();
         double sidewaysDistance = (sin(rawHorizontalPlaneAngle * PI / 180) * xyDistance);
         int positiveOrNegative = isNegative(rawHorizontalPlaneAngle) ? -1 : 1;
         double checkAngle = (camera.getHorizontalAngle() + positiveOrNegative * 90) * PI / 180;
         double[] checkPos = {cos(checkAngle) * abs(sidewaysDistance), sin(checkAngle) * abs(sidewaysDistance), 0};
         double correctedRadius = calculateSpaceDistance(checkPos, new double[]{relativeX, relativeY, relativeZ});
-        double correctedVerticalAngle = asin(relativeZ / correctedRadius);
-        //not accurate, seems broken when behind camera
-        //TODO: fix, flips when behind camera, loses data when calculating the horizontal angle
-        double actualDepth = cos(correctedVerticalAngle - camera.getVerticalAngle() * PI / 180) * correctedRadius;
-        double horizontalPlaneAngle = atan(sidewaysDistance / actualDepth) * 180 / PI;
+        double actualDepth = cos(verticalPlaneAngle * PI / 180) * correctedRadius;
+        double horizontalPlaneAngle = atan2(sidewaysDistance, actualDepth) * 180 / PI;
 
         //TODO: move the FOV division to the camera class, and save it there, changed when either screen size or FOV changes
         //I don't know if this actually is fully functional, it is a good equation though, nicely calibrated
         //as soon as it is off screen, then it doesn't matter, as I then should go by absolute math with frustum intersections and corner checks
 
-        if (false){
-        //if (horizontalPlaneAngle > camera.getHorizontalFOV() / 2 || horizontalPlaneAngle < camera.getHorizontalFOV() / -2){
+        //if (false){
+        if (horizontalPlaneAngle > camera.getHorizontalFOV() / 2 || horizontalPlaneAngle < camera.getHorizontalFOV() / -2){
             screenPos[0] = -1;
             screenPos[1] = -1;
         } else {

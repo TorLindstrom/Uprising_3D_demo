@@ -1,6 +1,6 @@
 package tor.mathHandling;
 
-import tor.Manager;
+import tor.controller.Camera;
 import tor.shapeHandling.Point;
 import tor.shapeHandling.Side;
 
@@ -32,7 +32,6 @@ public class StandardMath
     {
         return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
     }
-
     public static double calculatePaneDistance(double x, double y, double x2, double y2)
     {
         return Math.sqrt(Math.pow(x - x2, 2) + Math.pow(y - y2, 2));
@@ -42,12 +41,10 @@ public class StandardMath
     {
         return sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
     }
-
     public static double calculateSpaceDistance(double x, double y, double z, double x2, double y2, double z2)
     {
         return sqrt(pow(x - x2, 2) + pow(y - y2, 2) + pow(z - z2, 2));
     }
-
     public static double calculateSpaceDistance(double[] pos1, double[] pos2)
     {
         return sqrt(pow(pos1[0] - pos2[0], 2) + pow(pos1[1] - pos2[1], 2) + pow(pos1[2] - pos2[2], 2));
@@ -114,25 +111,62 @@ public class StandardMath
         };
     }
 
-    public static double[] createSecondRayPosition(int x, int y, Manager manager)
+    public static Point createSecondRayPosition(double x, double y, Camera camera)
     {
-        //for making a triangle, with the side 1 (half width of screen)
-        double fromMiddleHorizontal = (x - (width / 2.));
-        double fromMiddleVertical = (y - (height / 2.));
+        //TODO: look this up
+        //derive angles from screen positions, need to be updated along with makeRelative
+        double horizontalAngleDerivedFromScreenPos = (-atan(x/(width/2.) - 1) * 180 / PI) / (360/(camera.getHorizontalFOV() * 4));
+        double horizontalAngle = camera.getHorizontalAngle() + horizontalAngleDerivedFromScreenPos;
+        double verticalAngleDerivedFromScreenPos = (-atan(y/(height/2.) - 1) * 180 / PI) / (360/(camera.getVerticalFOV() * 4));
+        double verticalAngle = camera.getVerticalAngle() + verticalAngleDerivedFromScreenPos;
 
-        //length of middle spar, determined from FOV
-        double lengthOfMiddleHorizontal = (width / 2.) / tan((manager.getCamera().getHorizontalFOV() / 2) * (PI / 180));
-        double lengthOfMiddleVertical = (height / 2.) / tan((manager.getCamera().getVerticalFOV() / 2) * (PI / 180));
+        double z = sin(verticalAngle * PI / 180) * 100 + camera.getZ();
+        double horizontalSpar = tan(horizontalAngle * PI / 180) * cos(verticalAngle * PI / 180) * 100;
+        double radHorizontal = (camera.getHorizontalAngle() + 90 * (isNegative(horizontalAngleDerivedFromScreenPos) ? -1 : 1)) * PI / 180;
+        double[] startPos = {cos(radHorizontal) * horizontalSpar + camera.getX(), sin(radHorizontal) * horizontalSpar + camera.getY()};
+        double fullBase = cos(verticalAngle * PI / 180) * 100;
+        return new Point(startPos[0] + cos(camera.getHorizontalAngle() * PI / 180) * fullBase, startPos[1] + sin(camera.getHorizontalAngle() * PI / 180) * fullBase, z);
 
-        //angles of ray
-        double horizontalAngle = atan(fromMiddleHorizontal / lengthOfMiddleHorizontal) + (manager.getCamera().getHorizontalAngle() * (PI / 180));
-        double verticalAngle = atan(-fromMiddleVertical / lengthOfMiddleVertical) + (manager.getCamera().getVerticalAngle() * (PI / 180));
+        /*//reuse
+        double RadHorizontalAngle = camera.getHorizontalAngle() * PI / 180;
+        double positiveHalfVFOV = (camera.getVerticalAngle() + camera.getVerticalFOV() / 2) * PI / 180;
+        double negativeHalfVFOV = (camera.getVerticalAngle() - camera.getVerticalFOV() / 2) * PI / 180;
 
-        return new double[]{
-                cos(horizontalAngle) * 10 + manager.getCamera().getX(),
-                sin(horizontalAngle) * 10 + manager.getCamera().getY(),
-                sin(verticalAngle) * 10 + manager.getCamera().getZ()
-        };
+        //camera pos
+        double cameraX = camera.getX();
+        double cameraY = camera.getY();
+        double cameraZ = camera.getZ();
+
+        //height, top, respectively bot
+        double topPos = sin(positiveHalfVFOV) * 100 + cameraZ;
+        double botPos = sin(negativeHalfVFOV) * 100 + cameraZ;
+        //topDepth, botDepth
+        double topDepth = cos(positiveHalfVFOV) * 100;
+        double botDepth = cos(negativeHalfVFOV) * 100;
+
+        //leftStartPos
+        double[] firstPosLeft = {cos((camera.getHorizontalAngle() + 90) * PI / 180) * halfWidth, sin((camera.getHorizontalAngle() + 90) * PI / 180) * halfWidth};
+
+        //TODO: clean up, reuse values instead
+        double topLeftXPos = firstPosLeft[0] + cos(RadHorizontalAngle) * topDepth + cameraX;
+        double topLeftYPos = firstPosLeft[1] + sin(RadHorizontalAngle) * topDepth + cameraY;
+        double botLeftXPos = firstPosLeft[0] + cos(RadHorizontalAngle) * botDepth + cameraX;
+        double botLeftYPos = firstPosLeft[1] + sin(RadHorizontalAngle) * botDepth + cameraY;
+
+        //rightStartPos
+        double[] firstPosRight = {cos((camera.getHorizontalAngle() - 90) * PI / 180) * halfWidth, sin((camera.getHorizontalAngle() - 90) * PI / 180) * halfWidth};
+
+        double topRightXPos = firstPosRight[0] + cos(RadHorizontalAngle) * topDepth + cameraX;
+        double topRightYPos = firstPosRight[1] + sin(RadHorizontalAngle) * topDepth + cameraY;
+        double botRightXPos = firstPosRight[0] + cos(RadHorizontalAngle) * botDepth + cameraX;
+        double botRightYPos = firstPosRight[1] + sin(RadHorizontalAngle) * botDepth + cameraY;
+
+
+        //TODO: not completely functional it seems
+        return new Point(
+                cos(horizontalAngle * PI / 180) * 100 + camera.getX(),
+                sin(horizontalAngle * PI / 180) * 100 + camera.getY(),
+                sin(verticalAngle * PI / 180) * 100 + camera.getZ());*/
     }
 
 }

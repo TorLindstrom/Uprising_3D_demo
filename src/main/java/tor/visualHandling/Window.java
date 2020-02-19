@@ -1,8 +1,9 @@
 package tor.visualHandling;
 
-import tor.Manager;
+import tor.controller.Manager;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class Window extends JFrame
 {
@@ -15,5 +16,7 @@ public class Window extends JFrame
         setVisible(true);
         setResizable(false);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        //TODO: for custom cursor, being blank that is, only movement matters right now
+        //getContentPane().setCursor(Toolkit.getDefaultToolkit().createCustomCursor());
     }
 }

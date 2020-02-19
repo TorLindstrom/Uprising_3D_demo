@@ -1,15 +1,21 @@
-package tor;
+package tor.controller;
 
 import tor.shapeHandling.Point;
 
 public class Camera extends Point
 {
     private double horizontalAngle = 0, verticalAngle = 0, rollAngle = 0;
-    private double horizontalFOV = 90, verticalFOV = 65;
+    private double horizontalFOV = 110, verticalFOV = 85;
 
     public Camera(Point point)
     {
         super(point);
+    }
+    public Camera(double[] pos){
+        super(pos);
+    }
+    public Camera(int x, int y, int z){
+        super(x, y, z);
     }
 
     public double getHorizontalAngle()

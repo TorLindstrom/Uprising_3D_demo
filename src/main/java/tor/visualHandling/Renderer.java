@@ -1,7 +1,7 @@
 package tor.visualHandling;
 
-import tor.Camera;
-import tor.Manager;
+import tor.controller.Camera;
+import tor.controller.Manager;
 import tor.mathHandling.StandardMath;
 import tor.shapeHandling.Shape;
 import tor.shapeHandling.Side;
@@ -42,6 +42,7 @@ public class Renderer extends JPanel
                 paintPixel(graphics2D, currentClosestSide, i, j);
             }
         }
+        //TODO: paint gui overlays now, sights, ammo, what not
     }
 
     public static ArrayList<Integer[]> putWithinView(Side side, Camera camera, Side[] frustumSides)
@@ -72,6 +73,7 @@ public class Renderer extends JPanel
 
     private void paintPixel(Graphics2D graphics2D, Side side, int i, int j)
     {
+        //TODO: add shadow check to modify brightness
         if (side == null) {
             return;
         } else if (side.getColor() == null) {
@@ -102,9 +104,9 @@ public class Renderer extends JPanel
                 return containedBy.get(0).side;
             }
             double distance = Double.MAX_VALUE;
-            double[] secondRayPosition = createSecondRayPosition(i, j, manager);
+            Point secondRayPosition = createSecondRayPosition(i, j, manager.getCamera());
             for (Frame frame : containedBy) {
-                double newDistance = calculateSpaceDistance(manager.getCamera().getPosition(), calculateIntersectionPoint(frame.side, manager.getCamera().getPosition(), secondRayPosition));
+                double newDistance = calculateSpaceDistance(manager.getCamera().getPosition(), calculateIntersectionPoint(frame.side, manager.getCamera().getPosition(), secondRayPosition.getPosition()));
                 if (newDistance < distance) {
                     distance = newDistance;
                     currentClosestSide = frame.side;
@@ -136,9 +138,11 @@ public class Renderer extends JPanel
                 //is boss
                 ArrayList<Integer> finalScreenPosX = new ArrayList<>();
                 ArrayList<Integer> finalScreenPosY = new ArrayList<>();
-                boolean lastOutside = true;
+                boolean lastOutside = false;
+                boolean first = true;
+                boolean firstOutside = false;
+                Point[] sideCorners = side.getCorners();
                 for (int i = 0; i < side.getCorners().length; i++) {
-                    Point[] sideCorners = side.getCorners();
                     Point point = side.getCorners()[i];
                     int[] screenPos = makeRelative(point.getX(), point.getY(), point.getZ(), manager.getCamera());
                     if (isOnScreen(screenPos)) {
@@ -153,6 +157,9 @@ public class Renderer extends JPanel
                         Point nextPoint = side.getCorners()[chooseIndex(sideCorners.length,i + 1)];
                         ArrayList<Point> onLineBack = new ArrayList<>();
                         ArrayList<Point> onLineForward = new ArrayList<>();
+                        if (first){
+                            firstOutside = true;
+                        }
                         if (!lastOutside) {
                             for (Side frustumSide : frustumSides) {
                                 Point intersection = new Point(calculateIntersectionPoint(frustumSide, point.getPosition(), lastPoint.getPosition()));
@@ -165,16 +172,17 @@ public class Renderer extends JPanel
                         }
                         //now check if a ray traced from a corner intersects the side that is formed by the active, former, and next points, if so add it, then sort by distance
                         for (Point corner: frustumCorners){
-                            //but! all corners will connect at some point, so which ones are valid?
                             if (isRayInsideFinitePlane(new Side(lastPoint, point, nextPoint), manager.getCamera().getPosition(), corner.getPosition())){
                                 validIntersections.add(corner);
                             }
                         }
                         //TODO: does not work, as make relative says the point is off screen, but the frustum is wider than what I can see, putting these points in a limbo?
-                        for (Side frustumSide : frustumSides) {
-                            Point intersection = new Point(calculateIntersectionPoint(frustumSide, point.getPosition(), nextPoint.getPosition()));
-                            if (StandardMath.isWithinSpaceRange(intersection, point, nextPoint)) {
-                                onLineForward.add(intersection);
+                        if (i < sideCorners.length - 1 || !firstOutside) {
+                            for (Side frustumSide : frustumSides) {
+                                Point intersection = new Point(calculateIntersectionPoint(frustumSide, point.getPosition(), nextPoint.getPosition()));
+                                if (StandardMath.isWithinSpaceRange(intersection, point, nextPoint)) {
+                                    onLineForward.add(intersection);
+                                }
                             }
                         }
                         //duplicate makeRelative call
@@ -198,6 +206,7 @@ public class Renderer extends JPanel
                         }
                         lastOutside = true;
                     }
+                    first = false;
                 }
                 int[] x = unpack(finalScreenPosX.toArray(new Integer[1]));
                 int[] y = unpack(finalScreenPosY.toArray(new Integer[1]));
@@ -331,22 +340,6 @@ public class Renderer extends JPanel
         double topRightYPos = firstPosRight[1] + sin(RadHorizontalAngle) * topDepth + cameraY;
         double botRightXPos = firstPosRight[0] + cos(RadHorizontalAngle) * botDepth + cameraX;
         double botRightYPos = firstPosRight[1] + sin(RadHorizontalAngle) * botDepth + cameraY;
-
-
-        /*double horizontalAngle = camera.getHorizontalAngle() + camera.getHorizontalFOV() / 2;
-        double verticalAngle = camera.getVerticalAngle() + camera.getVerticalFOV() / 2;
-        //should work, even while panning
-        double topPos = 100 * sin(verticalAngle * (PI / 180)) + camera.getZ();
-        verticalAngle -= camera.getVerticalFOV();
-        double botPos = 100 * sin(verticalAngle * PI / 180) + camera.getZ();
-        //former value: 119.274
-        double leftYPos = 100 * sin(horizontalAngle * PI / 180) + camera.getY();
-        //should be multiplied by a greater value to compensate for....something (circular angles as opposed to cartesian angles?),
-        //that keeps the horizontal angle, but makes the angle to top and bot pos functional and correct
-        double leftXPos = 100 * cos(horizontalAngle * PI / 180) + camera.getX();
-        horizontalAngle -= camera.getHorizontalFOV();
-        double rightYPos = 100 * sin(horizontalAngle * PI / 180) + camera.getY();
-        double rightXPos = 100 * cos(horizontalAngle * PI / 180) + camera.getX();*/
 
         //topleft, topright, botleft, botright
         return new Point[]{new Point(topLeftXPos, topLeftYPos, topPos), new Point(topRightXPos, topRightYPos, topPos), new Point(botLeftXPos, botLeftYPos, botPos), new Point(botRightXPos, botRightYPos, botPos)};

@@ -1,7 +1,7 @@
 package tor.visualHandling;
 
 
-import tor.Camera;
+import tor.controller.Camera;
 import tor.shapeHandling.Point;
 import tor.shapeHandling.Side;
 
@@ -22,6 +22,7 @@ public class PerspectiveMath
         double relativeZ = z - camera.getZ();
         int[] screenPos = new int[2];
 
+        //TODO: does not seem to be accurate vertical angles while panning up-down
         double xyDistance = calculatePaneDistance(relativeX, relativeY);
         double rawHorizontalPlaneAngle = (atan2(relativeY, relativeX) * (180 / PI)) - camera.getHorizontalAngle();
         double relativeXYDepth = cos(rawHorizontalPlaneAngle * (PI / 180)) * xyDistance;
@@ -35,11 +36,14 @@ public class PerspectiveMath
         double horizontalPlaneAngle = atan2(sidewaysDistance, actualDepth) * 180 / PI;
 
         //TODO: move the FOV division to the camera class, and save it there, changed when either screen size or FOV changes
-        //I don't know if this actually is fully functional, it is a good equation though, nicely calibrated
-        //as soon as it is off screen, then it doesn't matter, as I then should go by absolute math with frustum intersections and corner checks
+        //as soon as it is off screen, then it doesn't matter, as I then should go by absolute math with frustum intersections and corner checks, would mess otherwise
 
         //if (false){
-        if (horizontalPlaneAngle > camera.getHorizontalFOV() / 2 || horizontalPlaneAngle < camera.getHorizontalFOV() / -2){
+        double horizontalCheck = determineSignificantDigits(horizontalPlaneAngle, 4);
+        double verticalCheck = determineSignificantDigits(verticalPlaneAngle, 4);
+        //puts them off screen, forces frustum intersection tests
+        if (horizontalCheck > camera.getHorizontalFOV() / 2 || horizontalCheck < camera.getHorizontalFOV() / -2
+        || verticalCheck > camera.getVerticalFOV() / 2 || verticalCheck < camera.getVerticalFOV() / -2){
             screenPos[0] = -1;
             screenPos[1] = -1;
         } else {
@@ -48,21 +52,11 @@ public class PerspectiveMath
         }
         return screenPos;
     }
-
     public static int[] makeRelative(Point pos, Camera camera)
     {
         return makeRelative(pos.getX(), pos.getY(), pos.getZ(), camera);
-        /*double relativeX = pos.getX() - camera.getX();
-        double relativeY = pos.getY() - camera.getY();
-        double relativeZ = pos.getZ() - camera.getZ();
-        int[] screenPos = new int[2];
-        double horizontalPlaneAngle = (Math.atan2(relativeY, relativeX) * (180 / PI)) - camera.getHorizontalAngle();
-        double verticalPlaneAngle = (Math.atan(relativeZ / calculatePaneDistance(relativeX, relativeY)) * (180 / PI)) - camera.getVerticalAngle();
-        screenPos[0] = (int) (tan((horizontalPlaneAngle * PI / 180) / 4) * width / ((camera.getHorizontalFOV() / 2) / 180)) + width / 2;
-        screenPos[1] = (int) (tan((verticalPlaneAngle * PI / 180) / 4) * height / ((camera.getVerticalFOV() / 2) / 180)) + height / 2;
-        return screenPos;*/
-    }
 
+    }
     public static int[] makeRelative(double[] pos, Camera camera)
     {
         return makeRelative(pos[0], pos[1], pos[2], camera);
@@ -72,8 +66,9 @@ public class PerspectiveMath
     {
         //TODO: should only be called after movement, or even only after vertical movement, either moving up-down, or angling up-down
         //should be right in front when the camera is plain
-        double angleToHorizon = -camera.getVerticalAngle();
-        //double angleToHorizon = -((Math.atan(camera.getPosition()[2] / Double.MAX_VALUE)) * (180 / PI)) - camera.getVerticalAngle();
+        //double angleToHorizon = -camera.getVerticalAngle() / 4;
+        //TODO: need reworking
+        double angleToHorizon = -(atan(camera.getZ() / 600000)) - camera.getVerticalAngle() * PI / 180;
         return (int) (tan((camera.getVerticalAngle() * PI / 180) / 4) * height / ((camera.getVerticalFOV() / 2) / 180)) + height / 2;
         //return (int) (height - (camera.getVerticalFOV() / 2 + angleToHorizon) / camera.getVerticalFOV() * height);
     }

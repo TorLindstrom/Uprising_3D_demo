@@ -1,0 +1,52 @@
+
+UPRISING DOCUMENTATION: TODO's
+
+
+General TODO's:
+---------------
+* MAKE MORE TESTS!
+* break out code to be their own methods
+* make equations objects to be manipulated and sent around, with related methods in the same class, very helpful for future use
+* make it universal to use either Points OR double[] for positions, too mixed right now
+  * same with angles, radians, or angles
+* look over the setHorizon method, does not seem to work properly
+* clean up equations and method flows trying to save some processing power
+* look over access modifiers and encapsulation, also relationships between classes
+
+Frustum TODO's:
+---------------
+* make sure that every point conceivable is represented correctly, and make sure that all the shapes possible can all be represented properly
+* make sure that FOV is always correctly used and modified
+
+Renderer TODO's:
+----------------
+* look over the calculateFrames method, break out code into own methods, make more efficient
+* make sure that I can't lose any data or any points while calculating
+
+Math TODO's:
+------------
+* make createSecondRayPosition work properly, it needs to hit correctly at every possible point
+* calculate the reverse of the lens on makeRelative, should be easy
+
+------------------------------------------------------------------------------------------------------------------------
+
+WANTED TODO's:
+--------------
+* add shadows
+* add movement
+  * and add interactions and weapons
+* add support for bounding boxes, needed if I want more complexity, check bounding boxes first, if not possible to see it, then don't calculate the rest of the object
+  * easy way, create standing bounding boxes, with the naturally highest point being the top of the box, for example
+  * hard way, try to make the bounding box as small as possible around the object while still being composed of 6 corner points
+    * go by checking the lines, not panes, no warping and no errors
+* add concurrency
+  * split the rendering of pixels in half, one thread for each half, make sure they're synced
+  * another thread for calculating bounding boxes on the move
+  * another thread checking movement for next frame, projectiles and what not
+* add an editor
+* add textures
+  * and animated textures, such as snowfall, or water and fire effects, different texture files, active one depending on what time it is queried,
+        or have a modifier changing by each time unit to shift the value to be got, having the same texture but the same point on plane would change what pixel to show
+* camera filters and UIs
+* add animations for object meshes, spinning and morphing for example, also butterflies
+* add rollAngle so it can work, would be fun and cool, also necessary for flying perspective

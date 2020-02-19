@@ -1,10 +1,10 @@
 package tor.mathTests;
 
+import static java.lang.Math.*;
 import static tor.visualHandling.PerspectiveMath.*;
 
 import org.junit.Test;
-import tor.Camera;
-import tor.mathHandling.StandardMath;
+import tor.controller.Camera;
 import tor.shapeHandling.Point;
 import tor.shapeHandling.Side;
 
@@ -42,6 +42,15 @@ public class PerspectiveMathTest
     }
 
     @Test
+    public void halfAngleCheck()
+    {
+        assertEquals(width / 4., makeRelative(new Point(100, 50, 0), new Camera(0,0,0))[0], 1);
+        assertEquals((width / 8.) * 3, makeRelative(new Point(100, 25, 0), new Camera(0,0,0))[0], 1);
+        assertEquals(height / 4., makeRelative(new Point(100, 0, tan(32.5 * PI / 180) * 100 / 2), new Camera(0,0,0))[1], 1);
+        //assertEquals(height / 4., makeRelative(new Point(100, 50, 0), new Camera(0,0,0))[0], 1);
+    }
+
+    //@Test
     public void makeRelativeDebugTestCheck()
     {
         Camera camera = new Camera(new Point(-300, 200, 200));

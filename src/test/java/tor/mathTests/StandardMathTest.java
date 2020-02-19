@@ -1,18 +1,36 @@
 package tor.mathTests;
 
 import org.junit.Test;
+import tor.controller.Camera;
 import tor.mathHandling.StandardMath;
 import tor.shapeHandling.Point;
 
 import static org.junit.Assert.*;
 import static tor.mathHandling.StandardMath.*;
+import static tor.visualHandling.PerspectiveMath.*;
 
 public class StandardMathTest
 {
 
-
+    @Test
+    public void createSecondRayTopLeft(){
+        Camera camera = new Camera(0, 0, 0);
+        Point point = createSecondRayPosition(0, 0, camera);
+        int[] screenPos =  makeRelative(point, camera);
+        assertEquals(0,screenPos[0]);
+        assertEquals(0,screenPos[1]);
+    }
 
     //------------------------one step authenticated tests
+
+    @Test
+    public void createSecondRayMiddle(){
+        Camera camera = new Camera(0, 0, 0);
+        Point point = createSecondRayPosition(400, 250, camera);
+        int[] screenPos =  makeRelative(point, camera);
+        assertEquals(400,screenPos[0]);
+        assertEquals(250,screenPos[1]);
+    }
 
     @Test
     public void calcPaneDistanceDouble(){

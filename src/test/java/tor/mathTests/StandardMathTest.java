@@ -13,6 +13,17 @@ public class StandardMathTest
 {
 
     @Test
+    public void createSecondRaySpecial1(){
+        Camera camera = new Camera(0, 0, 0);
+        Point point = createSecondRayPosition(196, 376, camera);
+        int[] screenPos =  makeRelative(point, camera);
+        assertEquals(196,screenPos[0]);
+        assertEquals(376,screenPos[1]);
+    }
+
+    //------------------------one step validated tests
+
+    @Test
     public void createSecondRayTopLeft(){
         Camera camera = new Camera(0, 0, 0);
         Point point = createSecondRayPosition(0, 0, camera);
@@ -21,7 +32,32 @@ public class StandardMathTest
         assertEquals(0,screenPos[1]);
     }
 
-    //------------------------one step authenticated tests
+    @Test
+    public void createSecondRayTopRight(){
+        Camera camera = new Camera(0, 0, 0);
+        Point point = createSecondRayPosition(800, 0, camera);
+        int[] screenPos =  makeRelative(point, camera);
+        assertEquals(800,screenPos[0], 1);
+        assertEquals(0,screenPos[1], 1);
+    }
+
+    @Test
+    public void createSecondRayBotLeft(){
+        Camera camera = new Camera(0, 0, 0);
+        Point point = createSecondRayPosition(0, 500, camera);
+        int[] screenPos =  makeRelative(point, camera);
+        assertEquals(0,screenPos[0], 1);
+        assertEquals(500,screenPos[1], 1);
+    }
+
+    @Test
+    public void createSecondRayBotRight(){
+        Camera camera = new Camera(0, 0, 0);
+        Point point = createSecondRayPosition(800, 500, camera);
+        int[] screenPos =  makeRelative(point, camera);
+        assertEquals(800,screenPos[0], 1);
+        assertEquals(500,screenPos[1], 1);
+    }
 
     @Test
     public void createSecondRayMiddle(){

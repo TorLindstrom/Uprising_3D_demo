@@ -9,3 +9,8 @@ In the middle we have a Manager that sends information around and is the most ge
 all the objects in the scene, these are then composed of sides, which in turn is composed of points and also have a color.
 
 The manager also has-a window that has-a renderer. The render get called to be updated at every frame. repainting the picture.
+
+
+
+Algorithms:
+-----------

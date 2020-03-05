@@ -18,7 +18,8 @@ public class Transformer
     {
         Scanner scanner = new Scanner(System.in);
         scanner.nextLine();
-        long refreshRate = 30;
+        //59 hz is 16.949 ms in between frames
+        long refreshRate = 17;
 
         for (int i = 0; i < 360; i++) {
             camera.setHorizontalAngle(camera.getHorizontalAngle() + 1);

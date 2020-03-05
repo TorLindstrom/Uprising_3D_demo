@@ -41,15 +41,6 @@ public class PerspectiveMathTest
         assertEquals(500, makeRelative(pos, camera)[1], 1);
     }
 
-    @Test
-    public void halfAngleCheck()
-    {
-        assertEquals(width / 4., makeRelative(new Point(100, 50, 0), new Camera(0,0,0))[0], 1);
-        assertEquals((width / 8.) * 3, makeRelative(new Point(100, 25, 0), new Camera(0,0,0))[0], 1);
-        assertEquals(height / 4., makeRelative(new Point(100, 0, tan(32.5 * PI / 180) * 100 / 2), new Camera(0,0,0))[1], 1);
-        //assertEquals(height / 4., makeRelative(new Point(100, 50, 0), new Camera(0,0,0))[0], 1);
-    }
-
     //@Test
     public void makeRelativeDebugTestCheck()
     {
@@ -62,7 +53,36 @@ public class PerspectiveMathTest
     }
 
 
-    //------------------------one step authenticated tests
+    //------------------------one step validated tests
+
+    @Test
+    public void halfAngleCheck()
+    {
+        Camera camera = new Camera(0,0,0);
+        //these should be the same screen distance away from each other, is?
+        System.out.println(makeRelative(new Point(100, 0, 0), camera)[0]);
+        System.out.println(makeRelative(new Point(100, 20, 0), camera)[0]);
+        System.out.println(makeRelative(new Point(100, 40, 0), camera)[0]);
+        System.out.println(makeRelative(new Point(100, 60, 0), camera)[0]);
+        System.out.println(makeRelative(new Point(100, 80, 0), camera)[0]);
+        System.out.println(makeRelative(new Point(100, 100, 0), camera)[0]);
+        System.out.println(makeRelative(new Point(100, 120, 0), camera)[0]);
+        double widthWithFOV = tan(55 * PI / 180) * 100;
+        double heightWithFOV = tan(42.5 * PI / 180) * 100;
+        assertEquals(width / 4., makeRelative(new Point(100, widthWithFOV / 2, 0), camera)[0], 1);
+        assertEquals((width / 8.) * 3, makeRelative(new Point(100, widthWithFOV / 4, 0), camera)[0], 1);
+        assertEquals(height / 4., makeRelative(new Point(100, 0, heightWithFOV / 2), camera)[1], 1);
+
+        //FOV change
+        camera.setHorizontalFOV(80);
+        camera.setVerticalFOV(50);
+        widthWithFOV = tan(40 * PI / 180) * 100;
+        heightWithFOV = tan(25 * PI / 180) * 100;
+        assertEquals(width / 4., makeRelative(new Point(100, widthWithFOV / 2, 0), camera)[0], 1);
+        assertEquals((width / 8.) * 3, makeRelative(new Point(100, widthWithFOV / 4, 0), camera)[0], 1);
+        assertEquals(height / 4., makeRelative(new Point(100, 0, heightWithFOV / 2), camera)[1], 1);
+        //assertEquals(height / 4., makeRelative(new Point(100, 50, 0), new Camera(0,0,0))[0], 1);
+    }
 
     @Test
     public void isRayInsideFinitePlaneInFront(){
@@ -136,5 +156,5 @@ public class PerspectiveMathTest
 
     }
 
-    //------------------------two step authenticated tests
+    //------------------------two step validated tests
 }

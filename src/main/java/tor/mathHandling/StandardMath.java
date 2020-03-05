@@ -115,13 +115,18 @@ public class StandardMath
     {
         //TODO: look this up
         //derive angles from screen positions, need to be updated along with makeRelative
-        double horizontalAngleDerivedFromScreenPos = (-atan(x/(width/2.) - 1) * 180 / PI) / (360/(camera.getHorizontalFOV() * 4));
+        //old "good bad and pretty"
+        //double horizontalAngleDerivedFromScreenPos = (-atan(x/(width/2.) - 1) * 180 / PI) / (360/(camera.getHorizontalFOV() * 4));
+        //double verticalAngleDerivedFromScreenPos = (-atan(y/(height/2.) - 1) * 180 / PI) / (360/(camera.getVerticalFOV() * 4));
+        //test "wild wild west"
+        double horizontalAngleDerivedFromScreenPos = -atan(((x - (width / 2.)) / (width / 2.)) * (tan(camera.getHorizontalFOV() / 2 * PI / 180))) * 180 / PI;
+        double verticalAngleDerivedFromScreenPos = -atan(((y - (height / 2.)) / (height / 2.)) * (tan(camera.getVerticalFOV() / 2 * PI / 180))) * 180 / PI;
+
         double horizontalAngle = camera.getHorizontalAngle() + horizontalAngleDerivedFromScreenPos;
-        double verticalAngleDerivedFromScreenPos = (-atan(y/(height/2.) - 1) * 180 / PI) / (360/(camera.getVerticalFOV() * 4));
         double verticalAngle = camera.getVerticalAngle() + verticalAngleDerivedFromScreenPos;
 
         double z = sin(verticalAngle * PI / 180) * 100 + camera.getZ();
-        double horizontalSpar = tan(horizontalAngle * PI / 180) * cos(verticalAngle * PI / 180) * 100;
+        double horizontalSpar = abs(tan(horizontalAngle * PI / 180) * cos(verticalAngle * PI / 180) * 100);
         double radHorizontal = (camera.getHorizontalAngle() + 90 * (isNegative(horizontalAngleDerivedFromScreenPos) ? -1 : 1)) * PI / 180;
         double[] startPos = {cos(radHorizontal) * horizontalSpar + camera.getX(), sin(radHorizontal) * horizontalSpar + camera.getY()};
         double fullBase = cos(verticalAngle * PI / 180) * 100;

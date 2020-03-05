@@ -12,6 +12,7 @@ General TODO's:
 * look over the setHorizon method, does not seem to work properly
 * clean up equations and method flows trying to save some processing power
 * look over access modifiers and encapsulation, also relationships between classes
+* broken when flipping 360 degrees, could be how I write my angles from and to the camera, not combinable being above and below a certain degree at once
 
 Frustum TODO's:
 ---------------
@@ -26,7 +27,8 @@ Renderer TODO's:
 Math TODO's:
 ------------
 * make createSecondRayPosition work properly, it needs to hit correctly at every possible point
-* calculate the reverse of the lens on makeRelative, should be easy
+* make the camera able to move in any way possible without messing up the picture
+* look over the FOV and lens equation, well needed, I NEED to know that it can handle anything
 
 ------------------------------------------------------------------------------------------------------------------------
 
@@ -37,16 +39,17 @@ WANTED TODO's:
   * and add interactions and weapons
 * add support for bounding boxes, needed if I want more complexity, check bounding boxes first, if not possible to see it, then don't calculate the rest of the object
   * easy way, create standing bounding boxes, with the naturally highest point being the top of the box, for example
-  * hard way, try to make the bounding box as small as possible around the object while still being composed of 6 corner points
-    * go by checking the lines, not panes, no warping and no errors
+  * hard way, try to make the bounding box as small as possible around the object while still being composed of 6 corner points, added benefit of not including objects to soon by making their profiles smaller
+    * go by checking the lines, not panes, no warping and no duplicate checks
 * add concurrency
   * split the rendering of pixels in half, one thread for each half, make sure they're synced
   * another thread for calculating bounding boxes on the move
   * another thread checking movement for next frame, projectiles and what not
-* add an editor
+* and/or use PARALLEL STREAMS for example for bounding box calculations and making them relative
 * add textures
   * and animated textures, such as snowfall, or water and fire effects, different texture files, active one depending on what time it is queried,
         or have a modifier changing by each time unit to shift the value to be got, having the same texture but the same point on plane would change what pixel to show
 * camera filters and UIs
 * add animations for object meshes, spinning and morphing for example, also butterflies
 * add rollAngle so it can work, would be fun and cool, also necessary for flying perspective
+* add an editor

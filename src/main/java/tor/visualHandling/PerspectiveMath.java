@@ -16,6 +16,8 @@ public class PerspectiveMath
     public static int[] makeRelative(double x, double y, double z, Camera camera)
     {
         //TODO: caching the angle values, reuse if the next point have the same values, then can just take the saved data and save a lot of processing power
+        //and go by the proportions of sides relative each other to also find the appropriate angles
+        //hashMap?
         //make that save the most common angles? and the least common get ditched, saves memory?
         double relativeX = x - camera.getX();
         double relativeY = y - camera.getY();
@@ -23,6 +25,8 @@ public class PerspectiveMath
         int[] screenPos = new int[2];
 
         //TODO: does not seem to be accurate vertical angles while panning up-down
+        //TODO: decisively change between degrees to radians, only use degrees for the human readability
+        //TODO: chain rather than save, should at least keep them from staying alive unnecessarily long
         double xyDistance = calculatePaneDistance(relativeX, relativeY);
         double rawHorizontalPlaneAngle = (atan2(relativeY, relativeX) * (180 / PI)) - camera.getHorizontalAngle();
         double relativeXYDepth = cos(rawHorizontalPlaneAngle * (PI / 180)) * xyDistance;
@@ -37,6 +41,7 @@ public class PerspectiveMath
 
         //TODO: move the FOV division to the camera class, and save it there, changed when either screen size or FOV changes
         //as soon as it is off screen, then it doesn't matter, as I then should go by absolute math with frustum intersections and corner checks, would mess otherwise
+        //TODO: implement a lookup table for all the integral angle values, use those saved screen positions instead of calculating it again
 
         //if (false){
         double horizontalCheck = determineSignificantDigits(horizontalPlaneAngle, 4);
@@ -47,8 +52,15 @@ public class PerspectiveMath
             screenPos[0] = -1;
             screenPos[1] = -1;
         } else {
-            screenPos[0] = (int) (-tan(((horizontalPlaneAngle * PI / 180) / 4) / ((camera.getHorizontalFOV() / 2) / 180)) * width / 2 + width / 2);
-            screenPos[1] = (int) (-tan(((verticalPlaneAngle * PI / 180) / 4) / ((camera.getVerticalFOV() / 2) / 180)) * height / 2 + height / 2);
+
+            //CHANGE THESE, NEED CHANGE FOR RAYS AS WELL!
+
+            //old "improper"
+            //screenPos[0] = (int) (-tan(((horizontalPlaneAngle * PI / 180) / 4) / ((camera.getHorizontalFOV() / 2) / 180)) * width / 2 + width / 2);
+            //screenPos[1] = (int) (-tan(((verticalPlaneAngle * PI / 180) / 4) / ((camera.getVerticalFOV() / 2) / 180)) * height / 2 + height / 2);
+            //test "hopeful"
+            screenPos[0] = (int) ((-tan(horizontalPlaneAngle * PI / 180))/(tan(camera.getHorizontalFOV()/2 * PI / 180)) * width / 2 + width / 2);
+            screenPos[1] = (int) ((-tan(verticalPlaneAngle * PI / 180))/(tan(camera.getVerticalFOV()/2 * PI / 180)) * height / 2 + height / 2);
         }
         return screenPos;
     }

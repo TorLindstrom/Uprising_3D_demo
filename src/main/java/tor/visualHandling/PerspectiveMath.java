@@ -22,16 +22,21 @@ public class PerspectiveMath
         double relativeX = x - camera.getX();
         double relativeY = y - camera.getY();
         double relativeZ = z - camera.getZ();
-        int[] screenPos = new int[2];
 
+        if (x == 0){
+            //System.out.println("bingo");
+        }
+        
         //TODO: does not seem to be accurate vertical angles while panning up-down
         //TODO: decisively change between degrees to radians, only use degrees for the human readability
         //TODO: chain rather than save, should at least keep them from staying alive unnecessarily long
         double xyDistance = calculatePaneDistance(relativeX, relativeY);
         double rawHorizontalPlaneAngle = (atan2(relativeY, relativeX) * (180 / PI)) - camera.getHorizontalAngle();
+        rawHorizontalPlaneAngle = flipAroundAngle(camera, rawHorizontalPlaneAngle);
         double relativeXYDepth = cos(rawHorizontalPlaneAngle * (PI / 180)) * xyDistance;
         double verticalPlaneAngle = atan2(relativeZ, relativeXYDepth) * (180 / PI) - camera.getVerticalAngle();
         double sidewaysDistance = (sin(rawHorizontalPlaneAngle * PI / 180) * xyDistance);
+        //might fuck up when the camera angle is too high
         int positiveOrNegative = isNegative(rawHorizontalPlaneAngle) ? -1 : 1;
         double checkAngle = (camera.getHorizontalAngle() + positiveOrNegative * 90) * PI / 180;
         double[] checkPos = {cos(checkAngle) * abs(sidewaysDistance), sin(checkAngle) * abs(sidewaysDistance), 0};
@@ -43,6 +48,8 @@ public class PerspectiveMath
         //as soon as it is off screen, then it doesn't matter, as I then should go by absolute math with frustum intersections and corner checks, would mess otherwise
         //TODO: implement a lookup table for all the integral angle values, use those saved screen positions instead of calculating it again
 
+        int[] screenPos = new int[2];
+
         //if (false){
         double horizontalCheck = determineSignificantDigits(horizontalPlaneAngle, 4);
         double verticalCheck = determineSignificantDigits(verticalPlaneAngle, 4);
@@ -53,7 +60,7 @@ public class PerspectiveMath
             screenPos[1] = -1;
         } else {
 
-            //CHANGE THESE, NEED CHANGE FOR RAYS AS WELL!
+            //IF YOU CHANGE THESE, NEED CHANGE FOR RAYS AS WELL!
 
             //old "improper"
             //screenPos[0] = (int) (-tan(((horizontalPlaneAngle * PI / 180) / 4) / ((camera.getHorizontalFOV() / 2) / 180)) * width / 2 + width / 2);
@@ -88,6 +95,17 @@ public class PerspectiveMath
     public static boolean isOnScreen(int[] screenPos)
     {
         return isWithinRange(screenPos[0], 0, width) && isWithinRange(screenPos[1], 0, height);
+    }
+
+    public static double flipAroundAngle(Camera camera, double angle){
+        angle = angle % 360;
+        if (angle < -180) {
+            return 360 + angle;
+        } else if (angle > 180){
+            return -360 + angle;
+        } else {
+            return angle;
+        }
     }
 
     public static Integer[] findFrustumIntersection(Side[] frustumSides, double[] currentPos, double[] checkingPos)

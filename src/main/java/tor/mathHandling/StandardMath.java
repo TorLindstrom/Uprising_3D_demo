@@ -126,7 +126,7 @@ public class StandardMath
         double verticalAngle = camera.getVerticalAngle() + verticalAngleDerivedFromScreenPos;
 
         double z = sin(verticalAngle * PI / 180) * 100 + camera.getZ();
-        double horizontalSpar = abs(tan(horizontalAngle * PI / 180) * cos(verticalAngle * PI / 180) * 100);
+        double horizontalSpar = abs(tan(horizontalAngleDerivedFromScreenPos * PI / 180) * cos(verticalAngleDerivedFromScreenPos * PI / 180) * 100);
         double radHorizontal = (camera.getHorizontalAngle() + 90 * (isNegative(horizontalAngleDerivedFromScreenPos) ? -1 : 1)) * PI / 180;
         double[] startPos = {cos(radHorizontal) * horizontalSpar + camera.getX(), sin(radHorizontal) * horizontalSpar + camera.getY()};
         double fullBase = cos(verticalAngle * PI / 180) * 100;

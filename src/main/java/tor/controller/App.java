@@ -16,6 +16,6 @@ public class App
     {
         //and send the settings to the manager
         //and let manager handle the settings, and update the appropriate modules accordingly if on the fly
-        new Manager();
+        new Manager(args);
     }
 }

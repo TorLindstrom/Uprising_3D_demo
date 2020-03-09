@@ -5,6 +5,7 @@ import static tor.visualHandling.PerspectiveMath.*;
 
 import org.junit.Test;
 import tor.controller.Camera;
+import tor.controller.Manager;
 import tor.shapeHandling.Point;
 import tor.shapeHandling.Side;
 
@@ -41,6 +42,12 @@ public class PerspectiveMathTest
         assertEquals(500, makeRelative(pos, camera)[1], 1);
     }
 
+    @Test
+    public void frustumCornerChecks() throws InterruptedException
+    {
+        Manager manager = new Manager(new String[]{"true"});
+    }
+
     //@Test
     public void makeRelativeDebugTestCheck()
     {
@@ -54,6 +61,15 @@ public class PerspectiveMathTest
 
 
     //------------------------one step validated tests
+
+    @Test
+    public void angleFlips(){
+        Camera camera = new Camera(0,0,0);
+        assertEquals(120, flipAroundAngle(camera, 120), 0);
+        assertEquals(-140, flipAroundAngle(camera, 220), 0);
+        assertEquals(140, flipAroundAngle(camera, -220), 0);
+        assertEquals(60, flipAroundAngle(camera, 420), 0);
+    }
 
     @Test
     public void halfAngleCheck()

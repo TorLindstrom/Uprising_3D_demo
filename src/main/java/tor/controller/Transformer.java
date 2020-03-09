@@ -2,12 +2,19 @@ package tor.controller;
 
 import tor.visualHandling.Window;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalTime;
 import java.util.Scanner;
+import java.util.function.Consumer;
 
 public class Transformer
 {
     private Camera camera;
     private Window window;
+    //59 hz is 16.949 ms in between frames
+    //30 hz is 33.333 ms in between frames
+    private long refreshRate = 17;
 
     Transformer(Manager manager){
         this.camera = manager.getCamera();
@@ -18,8 +25,6 @@ public class Transformer
     {
         Scanner scanner = new Scanner(System.in);
         scanner.nextLine();
-        //59 hz is 16.949 ms in between frames
-        long refreshRate = 17;
 
         for (int i = 0; i < 360; i++) {
             camera.setHorizontalAngle(camera.getHorizontalAngle() + 1);
@@ -36,6 +41,8 @@ public class Transformer
             window.repaint();
             Thread.sleep(refreshRate);
         }
+        movementInstance(100, () -> camera.setHorizontalAngle(camera.getHorizontalAngle() + 0.2));
+        movementInstance(100, () -> camera.setHorizontalAngle(camera.getHorizontalAngle() - 0.2));
         for (int i = 0; i < 70; i++) {
             camera.setVerticalAngle(camera.getVerticalAngle() + 0.2);
             window.repaint();
@@ -101,6 +108,16 @@ public class Transformer
             camera.setHorizontalAngle(camera.getHorizontalAngle() + 0.5);
             window.repaint();
             Thread.sleep(refreshRate);
+        }
+    }
+
+    public void movementInstance(int duration, Move move) throws InterruptedException
+    {
+        for (int i = 0; i < duration; i++) {
+            LocalTime start = LocalTime.now();
+            move.move();
+            window.repaint();
+            Thread.sleep(refreshRate - Duration.between(start, LocalTime.now()).toMillis());
         }
     }
 }

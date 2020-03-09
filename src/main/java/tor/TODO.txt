@@ -1,6 +1,23 @@
 
 UPRISING DOCUMENTATION: TODO's
 
+Order of business:
+------------------
+* vertical angle inconsistencies (might be some copy paste/slarving error)
+* the weirdest testing period you can imagine, searching out the most heinous of errors and logical conundrums
+---
+* add user movement, mainly for easier testing of the darndest angles and positions
+* test the movement system thoroughly
+---
+* try and add lighting, the basic kind, and with that shadows as a bi product
+* test the lighting system thoroughly
+* try and add ambient occlusion for funsies
+* test and check for optimizations like crazy
+---
+* try and add textures
+* test, ofc
+---
+
 
 General TODO's:
 ---------------
@@ -13,6 +30,8 @@ General TODO's:
 * clean up equations and method flows trying to save some processing power
 * look over access modifiers and encapsulation, also relationships between classes
 * broken when flipping 360 degrees, could be how I write my angles from and to the camera, not combinable being above and below a certain degree at once
+* add a bufferedImage to be flushed, way smoother execution
+* fix the update frequency, not accurate, and not giving the right frame rate
 
 Frustum TODO's:
 ---------------
@@ -35,6 +54,8 @@ Math TODO's:
 WANTED TODO's:
 --------------
 * add shadows
+* add ambient occlusion
+* add antialiasing
 * add movement
   * and add interactions and weapons
 * add support for bounding boxes, needed if I want more complexity, check bounding boxes first, if not possible to see it, then don't calculate the rest of the object

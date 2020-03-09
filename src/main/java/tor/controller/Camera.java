@@ -25,8 +25,7 @@ public class Camera extends Point
 
     public void setHorizontalAngle(double horizontalAngle)
     {
-        this.horizontalAngle = horizontalAngle;
-        this.horizontalAngle %= 360;
+        this.horizontalAngle = horizontalAngle % 360;
     }
 
     public double getVerticalAngle()

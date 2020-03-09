@@ -9,13 +9,14 @@ import tor.controller.Manager;
 import tor.shapeHandling.Point;
 import tor.shapeHandling.Side;
 
+import static tor.visualHandling.Renderer.*;
 import static tor.visualHandling.Window.*;
 
 import static org.junit.Assert.*;
 
 public class PerspectiveMathTest
 {
-    @Test
+    /*@Test
     public void frustumCornerCheck()
     {
         Camera camera = new Camera(new Point(-300, 200, 200));
@@ -40,13 +41,7 @@ public class PerspectiveMathTest
         pos = new Point(new double[]{-215.6605, 115.6605, 146.271});
         assertEquals(800, makeRelative(pos, camera)[0], 1);
         assertEquals(500, makeRelative(pos, camera)[1], 1);
-    }
-
-    @Test
-    public void frustumCornerChecks() throws InterruptedException
-    {
-        Manager manager = new Manager(new String[]{"true"});
-    }
+    }*/
 
     //@Test
     public void makeRelativeDebugTestCheck()

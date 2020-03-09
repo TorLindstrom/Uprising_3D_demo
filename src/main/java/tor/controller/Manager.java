@@ -31,6 +31,7 @@ public class Manager
         }
 
         if (!test) {
+            scene.addShape(new Shape(new Side(Color.WHITE, new Point(-10000, -10000, 0), new Point(10000, -10000, 0), new Point(10000, 10000, 0), new Point(-10000, 10000, 0))));
         scene.addShape(new Shape(
                 new Side(Color.CYAN, new Point(0, 0, 0), new Point(0, 200, 0), new Point(100, 100, 200)),
                 new Side(Color.BLUE, new Point(0, 0, 0), new Point(200, 0, 0), new Point(100, 100, 200)),
@@ -66,7 +67,7 @@ public class Manager
                     new Side(Color.YELLOW, new Point(300, -400, 0), new Point(500, -400, 0), new Point(400, -300, 300)),
                     new Side(Color.LIGHT_GRAY, new Point(500, -400, 0), new Point(500, -200, 0), new Point(400, -300, 300)),
                     new Side(Color.GRAY, new Point(300, -200, 0), new Point(500, -200, 0), new Point(400, -300, 300))));
-        /*scene.addShape(new Shape(
+        scene.addShape(new Shape(
             new Side(Color.GRAY, new Point(2000, -500, 0), new Point(-1000, -500, 0), new Point(-1000, -500, 500), new Point(2000, -500, 500))));
         scene.addShape(new Shape(
                 new Side(Color.LIGHT_GRAY, new Point(2000, 900, 0), new Point(-1000, 900, 0), new Point(-1000, 900, 500), new Point(2000, 900, 500))));
@@ -78,12 +79,12 @@ public class Manager
                 new Side(Color.CYAN, new Point(0, 400, 0), new Point(0, 600, 0), new Point(100, 500, 200)),
                 new Side(Color.BLUE, new Point(0, 400, 0), new Point(200, 400, 0), new Point(100, 500, 200)),
                 new Side(Color.LIGHT_GRAY, new Point(200, 400, 0), new Point(200, 600, 0), new Point(100, 500, 200)),
-                new Side(Color.GRAY, new Point(0, 600, 0), new Point(200, 600, 0), new Point(100, 500, 200))));*/
-            camera.setHorizontalAngle(-32);
+                new Side(Color.GRAY, new Point(0, 600, 0), new Point(200, 600, 0), new Point(100, 500, 200))));
             System.out.println(LocalTime.now());
             window.repaint();
             System.out.println(LocalTime.now());
-            camera.setHorizontalAngle(camera.getHorizontalAngle() + 360);
+            window.repaint();
+            camera.setVerticalAngle(20);
             window.repaint();
             manage();
         }
@@ -110,5 +111,9 @@ public class Manager
     public Window getWindow()
     {
         return window;
+    }
+
+    public Transformer getMover(){
+        return mover;
     }
 }

@@ -23,8 +23,8 @@ public class PerspectiveMath
         double relativeY = y - camera.getY();
         double relativeZ = z - camera.getZ();
 
-        if (x == 0){
-            //System.out.println("bingo");
+        if (y == 900){
+            System.out.println("bingo");
         }
         
         //TODO: does not seem to be accurate vertical angles while panning up-down
@@ -45,7 +45,6 @@ public class PerspectiveMath
         double horizontalPlaneAngle = atan2(sidewaysDistance, actualDepth) * 180 / PI;
 
         //TODO: move the FOV division to the camera class, and save it there, changed when either screen size or FOV changes
-        //as soon as it is off screen, then it doesn't matter, as I then should go by absolute math with frustum intersections and corner checks, would mess otherwise
         //TODO: implement a lookup table for all the integral angle values, use those saved screen positions instead of calculating it again
 
         int[] screenPos = new int[2];
@@ -53,21 +52,13 @@ public class PerspectiveMath
         //if (false){
         double horizontalCheck = determineSignificantDigits(horizontalPlaneAngle, 4);
         double verticalCheck = determineSignificantDigits(verticalPlaneAngle, 4);
-        //puts them off screen, forces frustum intersection tests
         if (horizontalCheck > camera.getHorizontalFOV() / 2 || horizontalCheck < camera.getHorizontalFOV() / -2
         || verticalCheck > camera.getVerticalFOV() / 2 || verticalCheck < camera.getVerticalFOV() / -2){
             screenPos[0] = -1;
             screenPos[1] = -1;
         } else {
-
-            //IF YOU CHANGE THESE, NEED CHANGE FOR RAYS AS WELL!
-
-            //old "improper"
-            //screenPos[0] = (int) (-tan(((horizontalPlaneAngle * PI / 180) / 4) / ((camera.getHorizontalFOV() / 2) / 180)) * width / 2 + width / 2);
-            //screenPos[1] = (int) (-tan(((verticalPlaneAngle * PI / 180) / 4) / ((camera.getVerticalFOV() / 2) / 180)) * height / 2 + height / 2);
-            //test "hopeful"
-            screenPos[0] = (int) ((-tan(horizontalPlaneAngle * PI / 180))/(tan(camera.getHorizontalFOV()/2 * PI / 180)) * width / 2 + width / 2);
-            screenPos[1] = (int) ((-tan(verticalPlaneAngle * PI / 180))/(tan(camera.getVerticalFOV()/2 * PI / 180)) * height / 2 + height / 2);
+            screenPos[0] = (int) (((-tan(horizontalPlaneAngle * PI / 180))/(tan(camera.getHorizontalFOV()/2 * PI / 180)) * width / 2 + width / 2) + 0.5);
+            screenPos[1] = (int) (((-tan(verticalPlaneAngle * PI / 180))/(tan(camera.getVerticalFOV()/2 * PI / 180)) * height / 2 + height / 2) + 0.5);
         }
         return screenPos;
     }
@@ -116,6 +107,9 @@ public class PerspectiveMath
     public static boolean isRayInsideFinitePlane(Side side, double[] camera, double[] frustumCorner)
     {
         double[] planeIntersectionPoint = calculateIntersectionPoint(side, camera, frustumCorner);
+        if (calculateSpaceDistance(planeIntersectionPoint, camera) < calculateSpaceDistance(planeIntersectionPoint, frustumCorner)){
+            return false;
+        }
         Point[] corners = side.getCorners();
         //the line between 0 and 1 is already used below, only need to check the other sides
         double[] midpoint = {(corners[0].getX() + corners[1].getX()) / 2,

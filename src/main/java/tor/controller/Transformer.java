@@ -1,24 +1,30 @@
 package tor.controller;
 
+import tor.mathHandling.StandardMath;
+import tor.visualHandling.Renderer;
 import tor.visualHandling.Window;
 
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalTime;
 import java.util.Scanner;
 import java.util.function.Consumer;
 
-public class Transformer
+public class Transformer implements KeyListener
 {
     private Camera camera;
     private Window window;
+    private Renderer renderer;
     //59 hz is 16.949 ms in between frames
     //30 hz is 33.333 ms in between frames
-    private long refreshRate = 17;
+    private long refreshRateMilli = 16;
 
     Transformer(Manager manager){
         this.camera = manager.getCamera();
         this.window = manager.getWindow();
+        this.renderer = window.getRenderer();
     }
 
     public void movement() throws InterruptedException
@@ -29,21 +35,25 @@ public class Transformer
         for (int i = 0; i < 360; i++) {
             camera.setHorizontalAngle(camera.getHorizontalAngle() + 1);
             window.repaint();
-            Thread.sleep(refreshRate);
+            Thread.sleep(refreshRateMilli);
         }
         for (int i = 0; i < 100; i++) {
             camera.setHorizontalAngle(camera.getHorizontalAngle() + 0.2);
             window.repaint();
-            Thread.sleep(refreshRate);
+            Thread.sleep(refreshRateMilli);
         }
         for (int i = 0; i < 100; i++) {
             camera.setHorizontalAngle(camera.getHorizontalAngle() - 0.2);
             window.repaint();
-            Thread.sleep(refreshRate);
+            Thread.sleep(refreshRateMilli);
         }
-        movementInstance(100, () -> camera.setHorizontalAngle(camera.getHorizontalAngle() + 0.2));
-        movementInstance(100, () -> camera.setHorizontalAngle(camera.getHorizontalAngle() - 0.2));
-        for (int i = 0; i < 70; i++) {
+        //while (true) {
+            movementInstance(100, () -> camera.setHorizontalAngle(camera.getHorizontalAngle() + 0.2));
+            movementInstance(100, () -> camera.setHorizontalAngle(camera.getHorizontalAngle() - 0.2));
+            movementInstance(200, () -> camera.setVerticalAngle(camera.getVerticalAngle() - 0.1));
+            movementInstance(200, () -> camera.setVerticalAngle(camera.getVerticalAngle() + 0.1));
+        //}
+        /*for (int i = 0; i < 70; i++) {
             camera.setVerticalAngle(camera.getVerticalAngle() + 0.2);
             window.repaint();
             Thread.sleep(refreshRate);
@@ -108,7 +118,7 @@ public class Transformer
             camera.setHorizontalAngle(camera.getHorizontalAngle() + 0.5);
             window.repaint();
             Thread.sleep(refreshRate);
-        }
+        }*/
     }
 
     public void movementInstance(int duration, Move move) throws InterruptedException
@@ -117,7 +127,33 @@ public class Transformer
             LocalTime start = LocalTime.now();
             move.move();
             window.repaint();
-            Thread.sleep(refreshRate - Duration.between(start, LocalTime.now()).toMillis());
+            long millis = /*refreshRateMilli -*/ Duration.between(start, LocalTime.now()).toMillis();
+            double fps = StandardMath.determineSignificantDigits(1000. / Duration.between(start, LocalTime.now()).toMillis(), 7);
+            renderer.updateFPS(fps);
+            //System.out.println(fps + " fps");
+            millis = refreshRateMilli - millis;
+            if (millis < 0){
+                millis = 1;
+            }
+            Thread.sleep(millis);
         }
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e)
+    {
+        System.out.println("type");
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e)
+    {
+        System.out.println("press");
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e)
+    {
+        System.out.println("released");
     }
 }

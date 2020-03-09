@@ -2,6 +2,8 @@ package tor.controller;
 
 import tor.shapeHandling.Point;
 
+import static tor.mathHandling.StandardMath.*;
+
 public class Camera extends Point
 {
     private double horizontalAngle = 0, verticalAngle = 0, rollAngle = 0;
@@ -68,5 +70,16 @@ public class Camera extends Point
     public void setVerticalFOV(double verticalFOV)
     {
         this.verticalFOV = verticalFOV;
+    }
+
+    @Override
+    public String toString()
+    {
+        return new StringBuilder(String.valueOf(determineSignificantDigits(getX(), 3)))
+                .append(" : ").append(determineSignificantDigits(getY(), 3))
+                .append(" : ").append(determineSignificantDigits(getZ(), 3))
+                .append(" :: ").append(determineSignificantDigits(horizontalAngle, 3))
+                .append(" : ").append(determineSignificantDigits(verticalAngle, 3))
+                .toString();
     }
 }

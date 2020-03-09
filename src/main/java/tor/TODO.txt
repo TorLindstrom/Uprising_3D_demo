@@ -9,6 +9,8 @@ Order of business:
 * add user movement, mainly for easier testing of the darndest angles and positions
 * test the movement system thoroughly
 ---
+* make it update the screen at the actually correct time, not accurate right now, making it way more jagged
+---
 * try and add lighting, the basic kind, and with that shadows as a bi product
 * test the lighting system thoroughly
 * try and add ambient occlusion for funsies

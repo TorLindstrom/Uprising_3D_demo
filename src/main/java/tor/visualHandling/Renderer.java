@@ -13,6 +13,8 @@ import static tor.mathHandling.StandardMath.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 import static java.lang.Math.*;
@@ -20,6 +22,7 @@ import static java.lang.Math.*;
 public class Renderer extends JPanel
 {
     public static Manager manager;
+    private double fps;
 
     public Renderer(Manager manager)
     {
@@ -30,6 +33,7 @@ public class Renderer extends JPanel
     @Override
     public void paintComponent(Graphics graphics)
     {
+        requestFocus();
         super.paintComponent(graphics);
         paintHorizon(graphics);
         Graphics2D graphics2D = (Graphics2D) graphics;
@@ -43,6 +47,10 @@ public class Renderer extends JPanel
             }
         }
         //TODO: paint gui overlays now, sights, ammo, what not
+        graphics2D.setColor(Color.BLACK);
+        graphics2D.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
+        graphics2D.drawString(manager.getCamera().toString(), 0, 17);
+        graphics2D.drawString(fps + " fps", 0, 32);
     }
 
     public static ArrayList<Integer[]> putWithinView(Side side, Camera camera, Side[] frustumSides)
@@ -163,7 +171,7 @@ public class Renderer extends JPanel
                         if (!lastOutside) {
                             for (Side frustumSide : frustumSides) {
                                 Point intersection = new Point(calculateIntersectionPoint(frustumSide, point.getPosition(), lastPoint.getPosition()));
-                                if (StandardMath.isWithinSpaceRange(intersection, point, lastPoint)) {
+                                if (isWithinSpaceRange(intersection, point, lastPoint)) {
                                     onLineBack.add(intersection);
                                 }
                             }
@@ -358,5 +366,9 @@ public class Renderer extends JPanel
         //Right
         frustumSides[3] = new Side(new Point(camera.getX(), camera.getY(), camera.getZ()), corners[1], corners[3]);
         return frustumSides;
+    }
+
+    public void updateFPS(double fps){
+        this.fps = fps;
     }
 }

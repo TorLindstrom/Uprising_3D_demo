@@ -15,6 +15,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.time.Duration;
+import java.time.LocalTime;
 import java.util.ArrayList;
 
 import static java.lang.Math.*;
@@ -22,7 +24,6 @@ import static java.lang.Math.*;
 public class Renderer extends JPanel
 {
     public static Manager manager;
-    private double fps;
 
     public Renderer(Manager manager)
     {
@@ -33,6 +34,7 @@ public class Renderer extends JPanel
     @Override
     public void paintComponent(Graphics graphics)
     {
+        LocalTime start = LocalTime.now();
         requestFocus();
         super.paintComponent(graphics);
         paintHorizon(graphics);
@@ -50,6 +52,9 @@ public class Renderer extends JPanel
         graphics2D.setColor(Color.BLACK);
         graphics2D.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         graphics2D.drawString(manager.getCamera().toString(), 0, 17);
+        long millis = Duration.between(start, LocalTime.now()).toMillis();
+        double fps = determineSignificantDigits(1000. / millis, 1);
+        System.out.println("time to draw: " + millis + " :: fps: " + fps);
         graphics2D.drawString(fps + " fps", 0, 32);
     }
 
@@ -81,6 +86,7 @@ public class Renderer extends JPanel
 
     private void paintPixel(Graphics2D graphics2D, Side side, int i, int j)
     {
+        //TODO: change so that this method draws to a bufferedImage that is later drawn all at once for "v-sync"
         //TODO: add shadow check to modify brightness
         if (side == null) {
             return;
@@ -132,6 +138,7 @@ public class Renderer extends JPanel
         Point[] frustumCorners = calculateFrustumCorners();
         Side[] frustumSides = calculateFrustumSides(frustumCorners);
         ArrayList<Frame> frames = new ArrayList<>();
+        //TODO: introduce parallel streams for handling individual objects and then within that, handling individual points for makeRelative
         for (Shape shape : manager.getScene().getShapes()) {
             for (Side side : shape.getSides()) {
                 /*int numberOfCorners = side.getCorners().length;
@@ -366,9 +373,5 @@ public class Renderer extends JPanel
         //Right
         frustumSides[3] = new Side(new Point(camera.getX(), camera.getY(), camera.getZ()), corners[1], corners[3]);
         return frustumSides;
-    }
-
-    public void updateFPS(double fps){
-        this.fps = fps;
     }
 }

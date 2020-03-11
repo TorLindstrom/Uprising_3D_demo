@@ -19,9 +19,10 @@ public class Transformer implements KeyListener
     private Renderer renderer;
     //59 hz is 16.949 ms in between frames
     //30 hz is 33.333 ms in between frames
-    private long refreshRateMilli = 16;
+    private long refreshRateMilli = 33;
 
-    Transformer(Manager manager){
+    Transformer(Manager manager)
+    {
         this.camera = manager.getCamera();
         this.window = manager.getWindow();
         this.renderer = window.getRenderer();
@@ -32,26 +33,21 @@ public class Transformer implements KeyListener
         Scanner scanner = new Scanner(System.in);
         scanner.nextLine();
 
-        for (int i = 0; i < 360; i++) {
-            camera.setHorizontalAngle(camera.getHorizontalAngle() + 1);
-            window.repaint();
-            Thread.sleep(refreshRateMilli);
-        }
-        for (int i = 0; i < 100; i++) {
-            camera.setHorizontalAngle(camera.getHorizontalAngle() + 0.2);
-            window.repaint();
-            Thread.sleep(refreshRateMilli);
-        }
-        for (int i = 0; i < 100; i++) {
-            camera.setHorizontalAngle(camera.getHorizontalAngle() - 0.2);
-            window.repaint();
-            Thread.sleep(refreshRateMilli);
-        }
         //while (true) {
-            movementInstance(100, () -> camera.setHorizontalAngle(camera.getHorizontalAngle() + 0.2));
-            movementInstance(100, () -> camera.setHorizontalAngle(camera.getHorizontalAngle() - 0.2));
-            movementInstance(200, () -> camera.setVerticalAngle(camera.getVerticalAngle() - 0.1));
-            movementInstance(200, () -> camera.setVerticalAngle(camera.getVerticalAngle() + 0.1));
+        //movementInstance(480, () -> camera.setVerticalAngle(camera.getVerticalAngle() + 0.75));
+        movementInstance(100, () -> camera.setHorizontalFOV(camera.getHorizontalFOV() + 1));
+        movementInstance(100, () -> camera.setHorizontalFOV(camera.getHorizontalFOV() - 1));
+        movementInstance(200, () -> camera.setVerticalAngle(camera.getVerticalAngle() - 0.05));
+        movementInstance(200, () -> camera.setVerticalAngle(camera.getVerticalAngle() + 0.05));
+        movementInstance(100, () -> camera.setHorizontalAngle(camera.getHorizontalAngle() + 0.2));
+        movementInstance(100, () -> camera.setHorizontalAngle(camera.getHorizontalAngle() - 0.2));
+        movementInstance(200, () -> camera.setVerticalAngle(camera.getVerticalAngle() - 0.1));
+        movementInstance(200, () -> camera.setVerticalAngle(camera.getVerticalAngle() + 0.1));
+        movementInstance(100, () -> camera.setX(camera.getX() + 2));
+        movementInstance(200, () -> camera.setVerticalAngle(camera.getVerticalAngle() + 0.2));
+        movementInstance(100, () -> camera.setHorizontalAngle(camera.getHorizontalAngle() + 0.2));
+        movementInstance(100, () -> camera.setHorizontalAngle(camera.getHorizontalAngle() - 0.2));
+        movementInstance(200, () -> camera.setVerticalAngle(camera.getVerticalAngle() - 0.2));
         //}
         /*for (int i = 0; i < 70; i++) {
             camera.setVerticalAngle(camera.getVerticalAngle() + 0.2);
@@ -128,11 +124,8 @@ public class Transformer implements KeyListener
             move.move();
             window.repaint();
             long millis = /*refreshRateMilli -*/ Duration.between(start, LocalTime.now()).toMillis();
-            double fps = StandardMath.determineSignificantDigits(1000. / Duration.between(start, LocalTime.now()).toMillis(), 7);
-            renderer.updateFPS(fps);
-            //System.out.println(fps + " fps");
             millis = refreshRateMilli - millis;
-            if (millis < 0){
+            if (millis < 0) {
                 millis = 1;
             }
             Thread.sleep(millis);

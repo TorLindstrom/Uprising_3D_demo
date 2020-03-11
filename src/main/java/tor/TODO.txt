@@ -3,8 +3,10 @@ UPRISING DOCUMENTATION: TODO's
 
 Order of business:
 ------------------
-* vertical angle inconsistencies (might be some copy paste/slarving error)
+* vertical angle inconsistencies, could just be some slight floatiness, to be investigated
 * the weirdest testing period you can imagine, searching out the most heinous of errors and logical conundrums
+* introduce BigDecimal and BufferedImage so that the final screen is actually correct and smoother
+* clean up you fool
 ---
 * add user movement, mainly for easier testing of the darndest angles and positions
 * test the movement system thoroughly
@@ -14,10 +16,20 @@ Order of business:
 * try and add lighting, the basic kind, and with that shadows as a bi product
 * test the lighting system thoroughly
 * try and add ambient occlusion for funsies
+* add the LOGGING feature for ease of speeding up
+
 * test and check for optimizations like crazy
+---
+* add bounding boxes
+* add bounding boxes viewing frustum culling
+* separate this into it's own thread for quickies
+* restrict player movement by use of bounding boxes (might introduce separate boxes for culling and for movement)
 ---
 * try and add textures
 * test, ofc
+---
+* try and add animations
+* testing goes along with it, duh
 ---
 
 
@@ -28,10 +40,8 @@ General TODO's:
 * make equations objects to be manipulated and sent around, with related methods in the same class, very helpful for future use
 * make it universal to use either Points OR double[] for positions, too mixed right now
   * same with angles, radians, or angles
-* look over the setHorizon method, does not seem to work properly
 * clean up equations and method flows trying to save some processing power
 * look over access modifiers and encapsulation, also relationships between classes
-* broken when flipping 360 degrees, could be how I write my angles from and to the camera, not combinable being above and below a certain degree at once
 * add a bufferedImage to be flushed, way smoother execution
 * fix the update frequency, not accurate, and not giving the right frame rate
 
@@ -47,7 +57,7 @@ Renderer TODO's:
 
 Math TODO's:
 ------------
-* make createSecondRayPosition work properly, it needs to hit correctly at every possible point
+* make createSecondRayPosition work properly, it needs to hit correctly at every possible point (introduce BigDecimals)
 * make the camera able to move in any way possible without messing up the picture
 * look over the FOV and lens equation, well needed, I NEED to know that it can handle anything
 
@@ -69,10 +79,12 @@ WANTED TODO's:
   * another thread for calculating bounding boxes on the move
   * another thread checking movement for next frame, projectiles and what not
 * and/or use PARALLEL STREAMS for example for bounding box calculations and making them relative
+* add a LOGGING feature to keep track of times it takes for different processes and then at the end of the run prints the gathered stats out to pinpoint the bottlenecks in speed
 * add textures
   * and animated textures, such as snowfall, or water and fire effects, different texture files, active one depending on what time it is queried,
         or have a modifier changing by each time unit to shift the value to be got, having the same texture but the same point on plane would change what pixel to show
 * camera filters and UIs
 * add animations for object meshes, spinning and morphing for example, also butterflies
 * add rollAngle so it can work, would be fun and cool, also necessary for flying perspective
+* add a custom file system and methods for reading and importing shapes from files
 * add an editor

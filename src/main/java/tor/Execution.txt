@@ -1,5 +1,5 @@
 
-UPRISING DOCUMENTATION EXECUTION
+UPRISING DOCUMENTATION: EXECUTION
 
 
 General flow:
@@ -10,7 +10,55 @@ all the objects in the scene, these are then composed of sides, which in turn is
 
 The manager also has-a window that has-a renderer. The render get called to be updated at every frame. repainting the picture.
 
-
+The parts:
+----------
+Controller - controls flow and calls
+* sets up the settings and the pieces needed, also loads the object data
+* starts the necessary threads and independent processes
+---
+Files - the actual connection between program and the data, used to read and write information to custom files
+* called from manager from start to read the contents of selected files and reconstructs them in the program
+* used for object data and their textures and reels along with settings if present
+---
+Renderer - draws the picture, PROPOSED: this just draws the sampled picture at a certain interval, removing the cause of tearing,
+    can be synced to the frame rate, redrawing every frame, then sleeps until next, keeping track of the time it takes to draw
+* takes the bufferedImage and displays it, waits for the remainder of the frame time, then redo it
+* uses affine transformation to stretch it accordingly to fit the chosen screen size
+---
+Data - models and animations, along with textures
+* represents objects to be manipulated and calculated
+* also includes the textures that can be applied if I can get it to work
+---
+Culling - determines what objects that are visible/ able to be visible, culls all else
+* goes by bounding boxes
+* all objects that have their bounding boxes intersect the viewing frustum is able to be viewed
+* all else are not able to be viewed, and are excluded from the pool to be sampled
+---
+Sampler - the organism that stitches the final buffer together
+* holds all the steps necessary to produce an image
+* it would go through the order of business and complete all steps
+    * point projection
+    * hit determination
+    * lighting and colouring (ambient occlusion)
+        * takes into account textures if able to (part of colouring)
+    * save the information
+* only uses the data objects that are in the current sampling pool, determined by the culling
+---
+(Sample) - the picture that is stitched together using math and data
+* all the calculations lead to this object being produced in various steps, holding the final pixel values to be transformed onto the physical screen
+---
+Mover - the brain that keeps track of where to user goes, and if they CAN go there, also keeps track of animations and hits from "aggressive" bounding boxes
+* takes input from the user, and moves the camera, also calls for shots
+* determines if the move is able to be performed by checking with the bounding boxes of nearby objects
+* changes the vertex positions of animated objects according to their reel
+* looks to see if a projectile connects and does damage accordingly
+---
+Sounds - maybe?
+---
+Math - used to transform all the data into relative points, also calculates light exposure and such things
+* all the wiring behind the faceplate, required to produce the final product
+* need to be as precise and quick as possible
+---
 
 Algorithms:
 -----------

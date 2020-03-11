@@ -23,10 +23,10 @@ public class PerspectiveMath
         double relativeY = y - camera.getY();
         double relativeZ = z - camera.getZ();
 
-        if (y == 900){
-            System.out.println("bingo");
+        if (z == 300){
+            //System.out.println("bingo");
         }
-        
+
         //TODO: does not seem to be accurate vertical angles while panning up-down
         //TODO: decisively change between degrees to radians, only use degrees for the human readability
         //TODO: chain rather than save, should at least keep them from staying alive unnecessarily long
@@ -35,8 +35,8 @@ public class PerspectiveMath
         rawHorizontalPlaneAngle = flipAroundAngle(camera, rawHorizontalPlaneAngle);
         double relativeXYDepth = cos(rawHorizontalPlaneAngle * (PI / 180)) * xyDistance;
         double verticalPlaneAngle = atan2(relativeZ, relativeXYDepth) * (180 / PI) - camera.getVerticalAngle();
+        verticalPlaneAngle = flipAroundAngle(camera, verticalPlaneAngle);
         double sidewaysDistance = (sin(rawHorizontalPlaneAngle * PI / 180) * xyDistance);
-        //might fuck up when the camera angle is too high
         int positiveOrNegative = isNegative(rawHorizontalPlaneAngle) ? -1 : 1;
         double checkAngle = (camera.getHorizontalAngle() + positiveOrNegative * 90) * PI / 180;
         double[] checkPos = {cos(checkAngle) * abs(sidewaysDistance), sin(checkAngle) * abs(sidewaysDistance), 0};
@@ -75,12 +75,9 @@ public class PerspectiveMath
     public static int setHorizonLevel(Camera camera)
     {
         //TODO: should only be called after movement, or even only after vertical movement, either moving up-down, or angling up-down
-        //should be right in front when the camera is plain
-        //double angleToHorizon = -camera.getVerticalAngle() / 4;
+        double angleToHorizon = -camera.getVerticalAngle();
         //TODO: need reworking
-        double angleToHorizon = -(atan(camera.getZ() / 600000)) - camera.getVerticalAngle() * PI / 180;
-        return (int) (tan((camera.getVerticalAngle() * PI / 180) / 4) * height / ((camera.getVerticalFOV() / 2) / 180)) + height / 2;
-        //return (int) (height - (camera.getVerticalFOV() / 2 + angleToHorizon) / camera.getVerticalFOV() * height);
+        return (int) (((-tan(angleToHorizon * PI / 180))/(tan(camera.getVerticalFOV()/2 * PI / 180)) * height / 2 + height / 2) + 0.5);
     }
 
     public static boolean isOnScreen(int[] screenPos)
@@ -236,19 +233,16 @@ public class PerspectiveMath
                     case 0:
                         if (slopeOfCheckLine[0] != 0 && xHitDelta != 0) {
                             tValue = (corner.getX() - midpoint[0] + slopeOfCheckLine[0] * sValue) / xHitDelta;
-                            equationSolved = 0;
                             break;
                         }
                     case 1:
                         if (slopeOfCheckLine[1] != 0 && yHitDelta != 0) {
                             tValue = (corner.getY() - midpoint[1] + slopeOfCheckLine[1] * sValue) / yHitDelta;
-                            equationSolved = 1;
                             break;
                         }
                     case 2:
                         if (slopeOfCheckLine[2] != 0 && zHitDelta != 0) {
                             tValue = (corner.getZ() - midpoint[2] + slopeOfCheckLine[2] * sValue) / zHitDelta;
-                            equationSolved = 2;
                             break;
                         }
                 }

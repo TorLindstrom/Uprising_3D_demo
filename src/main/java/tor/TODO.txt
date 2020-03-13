@@ -3,13 +3,14 @@ UPRISING DOCUMENTATION: TODO's
 
 Order of business:
 ------------------
-* vertical angle inconsistencies, could just be some slight floatiness, to be investigated
-* the weirdest testing period you can imagine, searching out the most heinous of errors and logical conundrums
-* introduce BigDecimal and BufferedImage so that the final screen is actually correct and smoother
+* introduce BigDecimal (or equivalent tricks for accuracy) and BufferedImage so that the final screen is actually correct and smoother
+    * needed for certain angles to not freak the fuck out
 * clean up you fool
+* look into OpenGl or JOGL or DirectX for the first usages of hardware acceleration, specifically for matrices and ray calculations
 ---
 * add user movement, mainly for easier testing of the darndest angles and positions
 * test the movement system thoroughly
+* the weirdest testing period you can imagine, searching out the most heinous of errors and logical conundrums
 ---
 * make it update the screen at the actually correct time, not accurate right now, making it way more jagged
 ---
@@ -17,7 +18,6 @@ Order of business:
 * test the lighting system thoroughly
 * try and add ambient occlusion for funsies
 * add the LOGGING feature for ease of speeding up
-
 * test and check for optimizations like crazy
 ---
 * add bounding boxes
@@ -57,7 +57,7 @@ Renderer TODO's:
 
 Math TODO's:
 ------------
-* make createSecondRayPosition work properly, it needs to hit correctly at every possible point (introduce BigDecimals)
+* make createSecondRayPosition work properly, it needs to hit correctly at every possible point (introduce something like BigDecimals)
 * make the camera able to move in any way possible without messing up the picture
 * look over the FOV and lens equation, well needed, I NEED to know that it can handle anything
 

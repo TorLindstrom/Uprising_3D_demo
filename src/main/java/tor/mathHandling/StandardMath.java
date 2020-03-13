@@ -88,9 +88,9 @@ public class StandardMath
                 side.getCorners()[2].getZ() - side.getCorners()[0].getZ(),
         };
         double[] ray = new double[]{
-                secondPos[0] - firstPos[0],
-                secondPos[1] - firstPos[1],
-                secondPos[2] - firstPos[2]
+                (secondPos[0] * 1000 - firstPos[0] * 1000) / 1000,
+                (secondPos[1] * 1000 - firstPos[1] * 1000) / 1000,
+                (secondPos[2] * 1000 - firstPos[2] * 1000) / 1000
         };
 
         //Point (corner 0), and two vectors, P1, P2, describes a plane
@@ -101,7 +101,7 @@ public class StandardMath
         //                               x                  y               z             d (plane equation) = d
         double[] planeEquation = {normalToPlane[0], normalToPlane[1], normalToPlane[2], added};
 
-        double toBeDividedBy = (planeEquation[0] * ray[0] + planeEquation[1] * ray[1] + planeEquation[2] * ray[2]);
+        double toBeDividedBy = (planeEquation[0] * (ray[0] * 1000) + planeEquation[1] * (ray[1] * 1000) + planeEquation[2] * (ray[2] * 1000)) / 1000;
 
         return new double[]{
                 firstPos[0] - ((ray[0] * (planeEquation[0] * firstPos[0] + planeEquation[1] * firstPos[1] + planeEquation[2] * firstPos[2] + planeEquation[3])) / toBeDividedBy),

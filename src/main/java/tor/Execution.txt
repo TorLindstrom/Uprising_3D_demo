@@ -10,15 +10,22 @@ all the objects in the scene, these are then composed of sides, which in turn is
 
 The manager also has-a window that has-a renderer. The render get called to be updated at every frame. repainting the picture.
 
+
 The parts:
 ----------
 Controller - controls flow and calls
 * sets up the settings and the pieces needed, also loads the object data
 * starts the necessary threads and independent processes
+* controls a sync() method that is tied to the framerate and calls the frame to be rendered and calculations to be made for next frame
+    (might just be as good to have in series splitting it like this could instead be replaced by it being calculated in series with more resources instead.
+     would cause it to be more responsive, same with culler, would use up unnecessary resources just whirring like crazy without any new data,
+     so it can be called before all else, then calculator, and last renderer)
 ---
 Files - the actual connection between program and the data, used to read and write information to custom files
 * called from manager from start to read the contents of selected files and reconstructs them in the program
 * used for object data and their textures and reels along with settings if present
+* connects the same positioned vertices from several sides to the same point for fewer calculations,
+    but not for animated objects with splitting sides and corners, (if or not determined by the object with a boolean or unique id for the points, making them distinct while reading)
 ---
 Renderer - draws the picture, PROPOSED: this just draws the sampled picture at a certain interval, removing the cause of tearing,
     can be synced to the frame rate, redrawing every frame, then sleeps until next, keeping track of the time it takes to draw
@@ -56,9 +63,10 @@ Mover - the brain that keeps track of where to user goes, and if they CAN go the
 Sounds - maybe?
 ---
 Math - used to transform all the data into relative points, also calculates light exposure and such things
-* all the wiring behind the faceplate, required to produce the final product
+* all the wiring behind the facade, required to produce the final product
 * need to be as precise and quick as possible
 ---
+
 
 Algorithms:
 -----------

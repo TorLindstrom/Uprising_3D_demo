@@ -4,6 +4,7 @@ import org.junit.Test;
 import tor.controller.Camera;
 import tor.mathHandling.StandardMath;
 import tor.shapeHandling.Point;
+import tor.shapeHandling.Side;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -35,6 +36,14 @@ public class StandardMathTest
         System.out.println(0.56 + 0.58);
         System.out.println((0.56 * 1000 + 0.58 * 1000) / 1000);
         System.out.println();
+    }
+
+    @Test
+    public void faultyIntersection(){
+        Point point = new Point(calculateIntersectionPoint(new Side(new Point(-300, 200, 200),
+                new Point(-226.27, 287.87, 267.56),
+                new Point(-226.27, 287.87, 132.44)),
+                new double[] {-1000, 900, 0}, new double[] {-1000, 900, 500}));
     }
 
     @Test

@@ -19,7 +19,7 @@ public class Window extends JFrame
         setResizable(false);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         System.out.println(isFocusable());
-        this.addKeyListener(manager.getMover());
+        addKeyListener(manager.getMover());
         //TODO: for custom cursor, being blank that is, only movement matters right now
         //getContentPane().setCursor(Toolkit.getDefaultToolkit().createCustomCursor());
     }

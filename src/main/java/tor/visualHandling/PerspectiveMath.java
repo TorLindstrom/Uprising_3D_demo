@@ -123,6 +123,15 @@ public class PerspectiveMath
             double[] slopeOfCheckLine = {corners[index].getX() - corner.getX(),
                     corners[index].getY() - corner.getY(),
                     corners[index].getZ() - corner.getZ()};
+            if (determineSignificantDigits(xHitDelta - slopeOfCheckLine[0], 3) == 0){
+                xHitDelta = slopeOfCheckLine[0];
+            }
+            if (determineSignificantDigits(yHitDelta - slopeOfCheckLine[1], 3) == 0){
+                yHitDelta = slopeOfCheckLine[1];
+            }
+            if (determineSignificantDigits(zHitDelta - slopeOfCheckLine[2], 3) == 0){
+                zHitDelta = slopeOfCheckLine[2];
+            }
 
             double tValue = -1;
             double sValue = -1;

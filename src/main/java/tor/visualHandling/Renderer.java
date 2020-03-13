@@ -18,6 +18,7 @@ import java.awt.event.MouseListener;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.concurrent.BrokenBarrierException;
 
 import static java.lang.Math.*;
 
@@ -56,6 +57,11 @@ public class Renderer extends JPanel
         double fps = determineSignificantDigits(1000. / millis, 1);
         System.out.println("time to draw: " + millis + " :: fps: " + fps);
         graphics2D.drawString(fps + " fps", 0, 32);
+        try {
+            manager.renderBlock.await();
+        } catch (InterruptedException | BrokenBarrierException e) {
+            e.printStackTrace();
+        }
     }
 
     public static ArrayList<Integer[]> putWithinView(Side side, Camera camera, Side[] frustumSides)
@@ -186,9 +192,22 @@ public class Renderer extends JPanel
                             validIntersections.addAll(sortByFurthestDistance(removeInvisible(onLineBack), point));
                         }
                         //now check if a ray traced from a corner intersects the side that is formed by the active, former, and next points, if so add it, then sort by distance
+                        boolean caughtCorner = false;
                         for (Point corner: frustumCorners){
+                            if (side.getColor().equals(new Color(61, 92, 92))){
+                                //System.out.println("here");
+                            }
                             if (isRayInsideFinitePlane(new Side(lastPoint, point, nextPoint), manager.getCamera().getPosition(), corner.getPosition())){
                                 validIntersections.add(corner);
+                                caughtCorner = true;
+                            }
+                        }
+                        //second chance
+                        if (!caughtCorner && !lastOutside){
+                            for (Point corner: frustumCorners){
+                                if (isRayInsideFinitePlane(new Side(lastPoint, point, sideCorners[chooseIndex(sideCorners.length, i - 2)]), manager.getCamera().getPosition(), corner.getPosition())){
+                                    validIntersections.add(corner);
+                                }
                             }
                         }
                         //TODO: does not work, as make relative says the point is off screen, but the frustum is wider than what I can see, putting these points in a limbo?
@@ -317,6 +336,7 @@ public class Renderer extends JPanel
     {
         //TODO: Move this method to be called when the camera has moved, only! saves processing power
         //TODO: make it super dang simple with "cross" angles instead of several "straight" angles for xy positions
+        //TODO: might not be accurate enough
         Camera camera = manager.getCamera();
 
         double depth = cos(camera.getVerticalFOV() / 2 * PI / 180) * 100;

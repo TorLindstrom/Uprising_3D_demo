@@ -7,7 +7,7 @@ import static tor.mathHandling.StandardMath.*;
 public class Camera extends Point
 {
     private double horizontalAngle = 0, verticalAngle = 0, rollAngle = 0;
-    private double horizontalFOV = 100, verticalFOV = 85;
+    private double horizontalFOV = 110, verticalFOV = 85;
 
     public Camera(Point point)
     {

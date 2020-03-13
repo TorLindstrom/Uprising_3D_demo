@@ -10,15 +10,18 @@ import java.awt.*;
 import java.time.LocalTime;
 import java.util.InputMismatchException;
 import java.util.Map;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
 
 public class Manager
 {
     private Scene scene = new Scene();
-    final static private Camera camera = new Camera(new Point(-300, 200, 200));
+    final static private Camera camera = new Camera(new Point(-100, 0, 200));
     private Window window = new Window(this);
     private Transformer mover = new Transformer(this);
     //could be Boolean or Integer, or Double, or whatnot
     private Map<String, Object> settings;
+    public CyclicBarrier renderBlock = new CyclicBarrier(2);
 
     public Manager(String[] args) throws InterruptedException
     {
@@ -30,19 +33,19 @@ public class Manager
         }
 
         if (!test) {
-            /*scene.addShape(new Shape(new Side(Color.WHITE, new Point(-10000, -10000, 0), new Point(10000, -10000, 0), new Point(10000, 10000, 0), new Point(-10000, 10000, 0))));
-            scene.addShape(new Shape(
+            //scene.addShape(new Shape(new Side(Color.WHITE, new Point(-10000, -10000, 0), new Point(10000, -10000, 0), new Point(10000, 10000, 0), new Point(-10000, 10000, 0))));
+            /*scene.addShape(new Shape(
                     new Side(Color.CYAN, new Point(0, 0, 0), new Point(0, 200, 0), new Point(100, 100, 200)),
                     new Side(Color.BLUE, new Point(0, 0, 0), new Point(200, 0, 0), new Point(100, 100, 200)),
                     new Side(Color.LIGHT_GRAY, new Point(200, 0, 0), new Point(200, 200, 0), new Point(100, 100, 200)),
                     new Side(Color.GRAY, new Point(0, 200, 0), new Point(200, 200, 0), new Point(100, 100, 200))));*/
             Point reuse = new Point(400, 700, 300);
-            scene.addShape(new Shape(
+            /*scene.addShape(new Shape(
                     new Side(Color.ORANGE, new Point(300, 600, 0), new Point(300, 800, 0), reuse),
                     new Side(Color.YELLOW, new Point(300, 600, 0), new Point(500, 600, 0), reuse),
                     new Side(Color.LIGHT_GRAY, new Point(500, 600, 0), new Point(500, 800, 0), reuse),
                     new Side(Color.GRAY, new Point(300, 800, 0), new Point(500, 800, 0), reuse)));
-            /*reuse = new Point(400, 500, 300);
+            reuse = new Point(400, 500, 300);
             scene.addShape(new Shape(
                     new Side(Color.ORANGE, new Point(300, 400, 0), new Point(300, 600, 0), reuse),
                     new Side(Color.YELLOW, new Point(300, 400, 0), new Point(500, 400, 0), reuse),
@@ -53,8 +56,8 @@ public class Manager
                     new Side(Color.ORANGE, new Point(300, 200, 0), new Point(300, 400, 0), reuse),
                     new Side(Color.YELLOW, new Point(300, 200, 0), new Point(500, 200, 0), reuse),
                     new Side(Color.LIGHT_GRAY, new Point(500, 200, 0), new Point(500, 400, 0), reuse),
-                    new Side(Color.GRAY, new Point(300, 400, 0), new Point(500, 400, 0), reuse)));
-            reuse = new Point(400, 100, 300);
+                    new Side(Color.GRAY, new Point(300, 400, 0), new Point(500, 400, 0), reuse)));*/
+            /*reuse = new Point(400, 100, 300);
             scene.addShape(new Shape(
                     new Side(Color.ORANGE, new Point(300, 200, 0), new Point(300, 0, 0), reuse),
                     new Side(Color.YELLOW, new Point(300, 200, 0), new Point(500, 0, 0), reuse),
@@ -77,22 +80,22 @@ public class Manager
             scene.addShape(new Shape(
                     new Side(Color.LIGHT_GRAY, new Point(2000, 900, 0), new Point(-1000, 900, 0), new Point(-1000, 900, 500), new Point(2000, 900, 500))));
             scene.addShape(new Shape(
-                    new Side(Color.BLUE, new Point(2000, -500, 1000), new Point(-500, -500, 1000), new Point(-500, 500, 1000), new Point(2000, 500, 1000))));
-            scene.addShape(new Shape(
+                    new Side(Color.BLUE, new Point(2000, -500, 1000), new Point(-500, -500, 1000), new Point(-500, 500, 1000), new Point(2000, 500, 1000))));*/
+            /*scene.addShape(new Shape(
                     new Side(Color.CYAN, new Point(1000, -200, 1000), new Point(1000, 200, 1000), new Point(1000, 200, 0), new Point(1000, -200, 0))));*/
             /*scene.addShape(new Shape(
                     new Side(Color.CYAN, new Point(0, 400, 0), new Point(0, 600, 0), new Point(100, 500, 200)),
                     new Side(Color.BLUE, new Point(0, 400, 0), new Point(200, 400, 0), new Point(100, 500, 200)),
                     new Side(Color.LIGHT_GRAY, new Point(200, 400, 0), new Point(200, 600, 0), new Point(100, 500, 200)),
                     new Side(Color.GRAY, new Point(0, 600, 0), new Point(200, 600, 0), new Point(100, 500, 200))));*/
-            /*scene.addShape(new Shape(new Side(new Color(102, 153, 153), new Point(2500, 1200, 0), new Point(2500, 1200, 1200), new Point(-1000, 1200, 1200), new Point(-1000, 1200, 0)),
+            scene.addShape(new Shape(new Side(new Color(102, 153, 153), new Point(2500, 1200, 0), new Point(2500, 1200, 1200), new Point(-1000, 1200, 1200), new Point(-1000, 1200, 0)),
                     new Side(new Color(82, 122, 122), new Point(2500, 1200, 0), new Point(2500, 1200, 1200), new Point(2500, -1200, 1200), new Point(2500, -1200, 0)),
                     new Side(new Color(61, 92, 92), new Point(2500, -1200, 0), new Point(2500, -1200, 1200), new Point(-1000, -1200, 1200), new Point(-1000, -1200, 0)),
-                    new Side(new Color(41, 61, 61), new Point(2500, 1200, 1200), new Point(2500, -1200, 1200), new Point(-1000, -1200, 1200), new Point(-1000, 1200, 1200))));*/
+                    new Side(new Color(41, 61, 61), new Point(2500, 1200, 1200), new Point(2500, -1200, 1200), new Point(-1000, -1200, 1200), new Point(-1000, 1200, 1200))));
             System.out.println(LocalTime.now());
             window.repaint();
             System.out.println(LocalTime.now());
-            //camera.setVerticalAngle(-20);
+            camera.setVerticalAngle(-20);
             window.repaint();
             manage();
         }
@@ -100,8 +103,13 @@ public class Manager
 
     public void manage() throws InterruptedException
     {
+
         //move
-        mover.movement();
+        try {
+            mover.movement();
+        } catch (BrokenBarrierException e) {
+            e.printStackTrace();
+        }
         //read user input
         //cull by use of individual thread
         //refresh and render
